@@ -189,7 +189,7 @@ BillingUtils.InAppProductsQueryListener{
 
     override fun onSubscriptionPurchasesQueryResultComplete(resultCode: Int) {
         Handler(Looper.getMainLooper()).post {
-            AzureLanLog.d("MainActivity: subscription purchases query result complete")
+            AzureLanLog.i("MainActivity: subscription purchases query result complete")
             subscriptionPurchasesQueryResultCode = resultCode
             if (subProductsQueryResultsCode != null
                 && inAppPurchaseQueryResultCode != null
@@ -201,7 +201,7 @@ BillingUtils.InAppProductsQueryListener{
 
     override fun onSubscriptionProductsQueryResultComplete(resultCode: Int) {
         Handler(Looper.getMainLooper()).post {
-            AzureLanLog.d("MainActivity: subscription products query result complete")
+            AzureLanLog.i("MainActivity: subscription products query result complete")
             subProductsQueryResultsCode = resultCode
             if (subscriptionPurchasesQueryResultCode != null
                 && inAppPurchaseQueryResultCode != null
@@ -214,7 +214,7 @@ BillingUtils.InAppProductsQueryListener{
     override fun onInAppPurchasesQueryResultComplete(resultCode: Int) {
         Handler(Looper.getMainLooper()).post {
             inAppPurchaseQueryResultCode = resultCode
-            AzureLanLog.d("MainActivity: inapp purchases query result complete")
+            AzureLanLog.i("MainActivity: inapp purchases query result complete")
             if (subscriptionPurchasesQueryResultCode != null
                 && subProductsQueryResultsCode != null
                 && inAppProductsQueryResultCode != null) {
@@ -225,8 +225,8 @@ BillingUtils.InAppProductsQueryListener{
 
     override fun onInAppProductsQueryResultComplete(resultCode: Int) {
         Handler(Looper.getMainLooper()).post {
-            inAppPurchaseQueryResultCode = resultCode
-            AzureLanLog.d("MainActivity: inapp products query result complete")
+            inAppProductsQueryResultCode = resultCode
+            AzureLanLog.i("MainActivity: inapp products query result complete")
             if (subscriptionPurchasesQueryResultCode != null
                 && subProductsQueryResultsCode != null
                 && inAppPurchaseQueryResultCode != null) {
