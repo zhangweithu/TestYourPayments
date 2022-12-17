@@ -24,16 +24,17 @@ class BillingUtils(
 ):
     PurchasesUpdatedListener, DefaultLifecycleObserver, BillingClientStateListener {
     companion object {
-        const val PRODUCT_ID_WEEKLY_MEMBERSHIP = "com.azurelan.testyourpayments.weekly_sub_1"
-        const val PRODUCT_ID_MONTHLY_MEMBERSHIP = "com.azurelan.testyourpayments.monthly_sub_1"
+        const val PRODUCT_ID_WEEKLY_MEMBERSHIP = "com.azurelan.testyourpay.weekly_sub_1"
+        const val PRODUCT_ID_MONTHLY_MEMBERSHIP = "com.azurelan.testyourpay.monthly_sub_1"
         private const val WEEKLY_BASE_PLAN_TAG = "weekly-sub-1"
         private const val MONTHLY_BASE_PLAN_TAG = "monthly-sub-1"
-        private const val PRODUCT_ID_IN_APP_PRODUCT_BECOME_GARDENER = "gardener"
-        private const val PRODUCT_ID_IN_APP_PRODUCT_DANDELION = "dandelion"
-        private const val PRODUCT_ID_IN_APP_PRODUCT_ROSE = "rose"
+        const val PRODUCT_ID_IN_APP_PRODUCT_BECOME_GARDENER = "gardener_1"
+        const val PRODUCT_ID_IN_APP_PRODUCT_TREE = "tree_1"
+        const val PRODUCT_ID_IN_APP_PRODUCT_ROSE = "rose_1"
 
         var billingClient: BillingClient? = null
 
+        var availableInAppProductDetailsList: List<ProductDetails>? = null
         var availableSubscriptionDetailsList: List<ProductDetails>? = null
         var purchasedSubscriptionsList: List<Purchase>? = null
         var ownedInAppPurchasesList: List<Purchase>? = null
@@ -118,6 +119,32 @@ class BillingUtils(
             return null
         }
 
+        fun isWeeklySubActive(): Boolean {
+            purchasedSubscriptionsList?.let {
+                for (purchase in it) {
+                    if ((purchase.products.contains(PRODUCT_ID_WEEKLY_MEMBERSHIP))
+                        && purchase.isAcknowledged
+                        && purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
+                        return true
+                    }
+                }
+            }
+            return false
+        }
+
+        fun isGardenerActive(): Boolean {
+            ownedInAppPurchasesList?.let {
+                for (purchase in it) {
+                    if ((purchase.products.contains(PRODUCT_ID_IN_APP_PRODUCT_BECOME_GARDENER))
+                        && purchase.isAcknowledged
+                        && purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
+                        return true
+                    }
+                }
+            }
+            return false
+        }
+
         /** Fetches the purchase state of Subscription.*/
         fun getSubscriptionStatus(): SubscriptionActiveStatus {
             purchasedSubscriptionsList?.let {
@@ -142,6 +169,17 @@ class BillingUtils(
                 }
             }
             return SubscriptionActiveStatus.INACTIVE
+        }
+
+        fun getInAppProductDetails(id: String): ProductDetails? {
+            availableSubscriptionDetailsList?.let {
+                for (productDetails in it) {
+                    if (productDetails.productId == id) {
+                        return productDetails
+                    }
+                }
+            }
+            return null
         }
 
         /** Fetches the purchase state of Remove-Ads product.*/
@@ -254,6 +292,38 @@ class BillingUtils(
             }
         }
 
+        /** Launch the purchase flow for the given product */
+        fun launchPurchaseFlow(activity: Activity, productDetails: ProductDetails) {
+            val productDetailsParamsList = listOf(
+                BillingFlowParams.ProductDetailsParams.newBuilder()
+                    // retrieve a value for "productDetails" by calling queryProductDetailsAsync()
+                    .setProductDetails(productDetails)
+                    .build()
+            )
+
+            val billingFlowParams = BillingFlowParams.newBuilder()
+                .setProductDetailsParamsList(productDetailsParamsList)
+                .build()
+
+            // Launch the billing flow
+            val billingResult = billingClient?.launchBillingFlow(activity, billingFlowParams)
+            if (billingResult != null
+                && billingResult.responseCode != BillingClient.BillingResponseCode.OK) {
+                val errorMessage = getToastMessage(billingResult.responseCode)
+                errorMessage?.let {
+                    Handler(Looper.getMainLooper()).post {
+                        Toast
+                            .makeText(
+                                activity,
+                                activity.getString(it),
+                                Toast.LENGTH_SHORT
+                            )
+                            .show()
+                    }
+                }
+            }
+        }
+
         @StringRes
         private fun getToastMessage(billingResponseCode: Int): Int? {
             return when (billingResponseCode) {
@@ -285,10 +355,15 @@ class BillingUtils(
         fun onInAppPurchasesQueryResultComplete(resultCode: Int)
     }
 
+    interface InAppProductsQueryListener {
+        fun onInAppProductsQueryResultComplete(resultCode: Int)
+    }
+
     private val purchaseAckedListeners = mutableSetOf<PurchaseAckedListener>()
     private val subscriptionPurchasesQueryListeners = mutableSetOf<SubscriptionPurchasesQueryListener>()
     private val subscriptionProductsQueryListeners = mutableSetOf<SubscriptionProductsQueryListener>()
     private val inAppPurchasesQueryListeners = mutableSetOf<InAppPurchasesQueryListener>()
+    private val inAppProductsQueryListeners = mutableSetOf<InAppProductsQueryListener>()
     private var onBillingConnectFailedCallback: Runnable? = null
 
     fun registerPurchaseAckedListener(purchaseAckedListener: PurchaseAckedListener) {
@@ -306,6 +381,11 @@ class BillingUtils(
 
     fun registerOnBillingConnectFailedCallback(callback: Runnable) {
         onBillingConnectFailedCallback = callback
+    }
+
+    fun registerInAppProductsQueryListener(inAppProductsQueryListener: InAppProductsQueryListener) {
+        AzureLanLog.d("BillingUtils: added listener: %s", inAppProductsQueryListener)
+        inAppProductsQueryListeners.add(inAppProductsQueryListener)
     }
 
     fun registerInAppPurchasesQueryListener(inAppPurchasesQueryListener: InAppPurchasesQueryListener) {
@@ -334,6 +414,7 @@ class BillingUtils(
         onBillingConnectFailedCallback = null
         billingClient = null
         availableSubscriptionDetailsList = null
+        availableInAppProductDetailsList = null
         purchasedSubscriptionsList = null
     }
 
@@ -354,6 +435,7 @@ class BillingUtils(
             queryAvailableSubscriptions()
             queryOwnedSubscriptionPurchases()
             queryOwnedInAppPurchases()
+            queryAvailableInAppProducts()
         } else {
             val callback = onBillingConnectFailedCallback
             onBillingConnectFailedCallback = null
@@ -368,6 +450,49 @@ class BillingUtils(
                     )
                     .show()
             }
+        }
+    }
+
+    /** Query products available for sale */
+    private fun queryAvailableInAppProducts() {
+        val queryProductDetailsParams =
+            QueryProductDetailsParams.newBuilder()
+                .setProductList(
+                    listOf(
+                        QueryProductDetailsParams.Product.newBuilder()
+                            .setProductType(BillingClient.ProductType.INAPP)
+                            .build(),
+                    )
+                )
+                .build()
+        billingClient?.queryProductDetailsAsync(queryProductDetailsParams) { queryBillingResult,
+                                                                             productDetailsList ->
+            // check billingResult
+            // process returned productDetailsList
+            if (queryBillingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+                if (productDetailsList.isNotEmpty()) {
+                    availableInAppProductDetailsList = productDetailsList
+                }
+            } else {
+                val errorMessage = getToastMessage(queryBillingResult.responseCode)
+                errorMessage?.let {
+                    Handler(Looper.getMainLooper()).post {
+                        Toast
+                            .makeText(
+                                context,
+                                context.getString(it),
+                                Toast.LENGTH_SHORT
+                            )
+                            .show()
+                    }
+                }
+            }
+            for (inAppProductsQueryListener in inAppProductsQueryListeners) {
+                inAppProductsQueryListener
+                    .onInAppProductsQueryResultComplete(queryBillingResult.responseCode)
+            }
+            AzureLanLog.d(
+                "BillingUtils: in app products result list %s", productDetailsList)
         }
     }
 
@@ -557,12 +682,28 @@ class BillingUtils(
                         billingClient?.acknowledgePurchase(acknowledgePurchaseParams.build())
                     }
                     if (ackPurchaseResult?.responseCode == BillingClient.BillingResponseCode.OK) {
-                        for (purchaseAckedListener in purchaseAckedListeners) {
-                            purchaseAckedListener.onPurchaseAcked(purchase)
+                        if (isPurchaseConsumable(purchase)) {
+                            billingClient?.consumeAsync(
+                                ConsumeParams.newBuilder().setPurchaseToken(purchase.purchaseToken)
+                                    .build(),
+                            ) { result, purchaseToken ->
+                                for (purchaseAckedListener in purchaseAckedListeners) {
+                                    purchaseAckedListener.onPurchaseAcked(purchase)
+                                }
+                            }
+                        } else {
+                            for (purchaseAckedListener in purchaseAckedListeners) {
+                                purchaseAckedListener.onPurchaseAcked(purchase)
+                            }
                         }
                     }
                 }
             }
         }
+    }
+
+    private fun isPurchaseConsumable(purchase: Purchase): Boolean {
+        return purchase.products.contains(PRODUCT_ID_IN_APP_PRODUCT_TREE)
+                || purchase.products.contains(PRODUCT_ID_IN_APP_PRODUCT_ROSE)
     }
 }

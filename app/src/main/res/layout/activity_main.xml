@@ -24,88 +24,81 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
-                <TextView
-                    android:id="@+id/text"
-                    android:textColor="@android:color/white"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/hello_world" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:textColor="@android:color/white"
-                    android:text="One-Time Purchase" />
+                    android:text="@string/one_time_purchase" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/gardener"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="3dp"
-                    android:background="@android:color/holo_green_dark"
+                    android:background="@drawable/rounded_corner_bg"
                     android:textColor="@android:color/white"
-                    android:text="Be Gardener" />
+                    android:text="@string/be_gardener" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@android:color/white"
                     android:gravity="center"
-                    android:text="Consumable Purchase" />
+                    android:text="@string/consumable_purchase" />
 
                 <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/flower"
+                    android:id="@+id/rose"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="3dp"
-                    android:background="@android:color/holo_green_dark"
+                    android:background="@drawable/rounded_corner_bg"
                     android:textColor="@android:color/white"
-                    android:text="Buy Flower" />
+                    android:text="@string/buy_a_rose" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/tree"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="3dp"
-                    android:background="@android:color/holo_green_dark"
+                    android:background="@drawable/rounded_corner_bg"
                     android:textColor="@android:color/white"
-                    android:text="Buy Tree" />
+                    android:text="@string/buy_a_tree" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@android:color/white"
                     android:gravity="center"
-                    android:text="Subscriptions" />
+                    android:text="@string/subscriptions" />
 
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/weekly"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="3dp"
-                    android:background="@android:color/holo_green_dark"
+                    android:background="@drawable/rounded_corner_bg"
                     android:textColor="@android:color/white"
-                    android:text="Weekly Work" />
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/monthly"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="3dp"
-                    android:background="@android:color/holo_green_dark"
-                    android:textColor="@android:color/white"
-                    android:text="Monthly Work" />
+                    android:text="@string/weekly_sub" />
 
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
 
-        <androidx.wear.widget.CircularProgressLayout
+        <LinearLayout
             android:id="@+id/loading_indicator"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:colorSchemeColors="@android:color/white"
-            app:indeterminate="true"/>
+            android:layout_height="match_parent"
+            android:background="@android:color/black"
+            android:visibility="gone">
+
+            <androidx.wear.widget.CircularProgressLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:colorSchemeColors="@android:color/white"
+                app:indeterminate="true"/>
+
+        </LinearLayout>
 
     </FrameLayout>
 </androidx.wear.widget.BoxInsetLayout>
