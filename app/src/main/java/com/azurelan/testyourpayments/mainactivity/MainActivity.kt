@@ -149,6 +149,7 @@ BillingUtils.InAppProductsQueryListener{
         super.onStart()
 
         if (!hasInitiatedBilling) {
+            AzureLanLog.i("MainActivity: initializing Billing")
             Handler(Looper.getMainLooper()).post { initBillingIfApplicable() }
         }
     }
@@ -156,6 +157,7 @@ BillingUtils.InAppProductsQueryListener{
     override fun onResume() {
         super.onResume()
         if (hasInitiatedBilling) {
+            AzureLanLog.i("MainActivity: query purchases in onResume")
             billingUtils?.queryOwnedSubscriptionPurchases()
             billingUtils?.queryOwnedInAppPurchases()
         }
