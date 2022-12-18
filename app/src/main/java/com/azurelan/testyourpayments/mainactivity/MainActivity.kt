@@ -157,14 +157,14 @@ BillingUtils.InAppProductsQueryListener{
     override fun onResume() {
         super.onResume()
         if (hasInitiatedBilling) {
-            AzureLanLog.i("MainActivity: query purchases in onResume")
+            AzureLanLog.i("MainActivity: query purchases in onResume()")
             billingUtils?.queryOwnedSubscriptionPurchases()
             billingUtils?.queryOwnedInAppPurchases()
         }
     }
 
     override fun onPurchaseAcked(purchase: Purchase) {
-        AzureLanLog.i("MainActivity: purchase subs acked for %s", purchase)
+        AzureLanLog.i("MainActivity: on purchase acked for purchase %s", purchase)
         if (purchase.products.contains(BillingUtils.PRODUCT_ID_IN_APP_PRODUCT_TREE)) {
             treeCount++
             PreferencesAccessUtils.writePreferenceString(
@@ -191,7 +191,7 @@ BillingUtils.InAppProductsQueryListener{
 
     override fun onSubscriptionPurchasesQueryResultComplete(resultCode: Int) {
         Handler(Looper.getMainLooper()).post {
-            AzureLanLog.i("MainActivity: subscription purchases query result complete")
+            AzureLanLog.i("MainActivity: on owned subscription purchases query result complete")
             subscriptionPurchasesQueryResultCode = resultCode
             if (subProductsQueryResultsCode != null
                 && inAppPurchaseQueryResultCode != null
@@ -203,7 +203,7 @@ BillingUtils.InAppProductsQueryListener{
 
     override fun onSubscriptionProductsQueryResultComplete(resultCode: Int) {
         Handler(Looper.getMainLooper()).post {
-            AzureLanLog.i("MainActivity: subscription products query result complete")
+            AzureLanLog.i("MainActivity: on available subscription products query result complete")
             subProductsQueryResultsCode = resultCode
             if (subscriptionPurchasesQueryResultCode != null
                 && inAppPurchaseQueryResultCode != null
@@ -216,7 +216,7 @@ BillingUtils.InAppProductsQueryListener{
     override fun onInAppPurchasesQueryResultComplete(resultCode: Int) {
         Handler(Looper.getMainLooper()).post {
             inAppPurchaseQueryResultCode = resultCode
-            AzureLanLog.i("MainActivity: inapp purchases query result complete")
+            AzureLanLog.i("MainActivity: on owned inapp purchases query result complete")
             if (subscriptionPurchasesQueryResultCode != null
                 && subProductsQueryResultsCode != null
                 && inAppProductsQueryResultCode != null) {
@@ -228,7 +228,7 @@ BillingUtils.InAppProductsQueryListener{
     override fun onInAppProductsQueryResultComplete(resultCode: Int) {
         Handler(Looper.getMainLooper()).post {
             inAppProductsQueryResultCode = resultCode
-            AzureLanLog.i("MainActivity: inapp products query result complete")
+            AzureLanLog.i("MainActivity: on available inapp products query result complete")
             if (subscriptionPurchasesQueryResultCode != null
                 && subProductsQueryResultsCode != null
                 && inAppPurchaseQueryResultCode != null) {
