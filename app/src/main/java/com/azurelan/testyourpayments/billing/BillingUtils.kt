@@ -299,6 +299,10 @@ class BillingUtils(
         }
     }
 
+    interface PurchaseConsumedListener {
+        fun onPurchaseConsumed(purchase: Purchase)
+    }
+
     interface PurchaseAckedListener {
         fun onPurchaseAcked(purchase: Purchase)
     }
@@ -319,12 +323,17 @@ class BillingUtils(
         fun onInAppProductsQueryResultComplete(resultCode: Int)
     }
 
+    private val purchaseConsumedListeners = mutableSetOf<PurchaseConsumedListener>()
     private val purchaseAckedListeners = mutableSetOf<PurchaseAckedListener>()
     private val subscriptionPurchasesQueryListeners = mutableSetOf<SubscriptionPurchasesQueryListener>()
     private val subscriptionProductsQueryListeners = mutableSetOf<SubscriptionProductsQueryListener>()
     private val inAppPurchasesQueryListeners = mutableSetOf<InAppPurchasesQueryListener>()
     private val inAppProductsQueryListeners = mutableSetOf<InAppProductsQueryListener>()
     private var onBillingConnectFailedCallback: Runnable? = null
+
+    fun registerPurchaseConsumedListener(purchaseConsumedListener: PurchaseConsumedListener) {
+        purchaseConsumedListeners.add(purchaseConsumedListener)
+    }
 
     fun registerPurchaseAckedListener(purchaseAckedListener: PurchaseAckedListener) {
         purchaseAckedListeners.add(purchaseAckedListener)
@@ -369,6 +378,7 @@ class BillingUtils(
     fun cleanUpBillingClient() {
         AzureLanLog.d("BillingUtils: clean up")
         billingClient?.endConnection()
+        purchaseConsumedListeners.clear()
         purchaseAckedListeners.clear()
         subscriptionPurchasesQueryListeners.clear()
         subscriptionProductsQueryListeners.clear()
@@ -599,6 +609,22 @@ class BillingUtils(
                                 "BillingUtils: acking inapp purchase not yet acked: %s",
                                 purchase)
                             handlePurchase(purchase)
+                        } else {
+                            // Acked purchases. Check if any are consumable but not correctly consumed
+                            if (isPurchaseConsumable(purchase)) {
+                                AzureLanLog.i(
+                                    "BillingUtils: consuming purchase in queryOwnedInAppPurchases(): %s",
+                                    purchase)
+                                billingClient?.consumeAsync(
+                                    ConsumeParams.newBuilder().setPurchaseToken(purchase.purchaseToken)
+                                        .build(),
+                                ) { result, purchaseToken ->
+                                    for (purchaseConsumedListener in purchaseConsumedListeners) {
+                                        purchaseConsumedListener.onPurchaseConsumed(purchase)
+                                    }
+                                    AzureLanLog.i("BillingUtils: consumed purchase in queryOwnedInAppPurchases()")
+                                }
+                            }
                         }
                     }
                 }
@@ -701,6 +727,9 @@ class BillingUtils(
                                 purchaseAckedListener.onPurchaseAcked(purchase)
                             }
                         }
+                    } else {
+                        AzureLanLog.i("BillingUtils: acking purchase failing with code %s",
+                            ackPurchaseResult?.responseCode.toString())
                     }
                 }
             }

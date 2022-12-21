@@ -21,7 +21,8 @@ BillingUtils.PurchaseAckedListener,
 BillingUtils.SubscriptionPurchasesQueryListener,
 BillingUtils.SubscriptionProductsQueryListener,
 BillingUtils.InAppPurchasesQueryListener,
-BillingUtils.InAppProductsQueryListener{
+BillingUtils.InAppProductsQueryListener,
+BillingUtils.PurchaseConsumedListener{
 
     private lateinit var binding: ActivityMainBinding
     private var billingUtils: BillingUtils? = null
@@ -134,6 +135,7 @@ BillingUtils.InAppProductsQueryListener{
                 }
             }
         }
+        billingUtils?.registerPurchaseConsumedListener(this)
         billingUtils?.registerPurchaseAckedListener(this)
         billingUtils?.registerSubscriptionPurchasesQueryListener(this)
         billingUtils?.registerSubscriptionProductsQueryListener(this)
@@ -163,9 +165,9 @@ BillingUtils.InAppProductsQueryListener{
         }
     }
 
-    override fun onPurchaseAcked(purchase: Purchase) {
-        AzureLanLog.i("MainActivity: on purchase acked for purchase %s", purchase)
+    override fun onPurchaseConsumed(purchase: Purchase) {
         if (purchase.products.contains(BillingUtils.PRODUCT_ID_IN_APP_PRODUCT_TREE)) {
+            AzureLanLog.i("MainActivity: on purchase consumed for purchase %s", purchase)
             treeCount++
             PreferencesAccessUtils.writePreferenceString(
                 this,
@@ -174,6 +176,7 @@ BillingUtils.InAppProductsQueryListener{
             )
         }
         if (purchase.products.contains(BillingUtils.PRODUCT_ID_IN_APP_PRODUCT_ROSE)) {
+            AzureLanLog.i("MainActivity: on purchase consumed for purchase %s", purchase)
             roseCount++
             PreferencesAccessUtils.writePreferenceString(
                 this,
@@ -182,11 +185,16 @@ BillingUtils.InAppProductsQueryListener{
             )
         }
         Handler(Looper.getMainLooper()).post {
-            AzureLanLog.i("MainActivity: acked and recreate UI")
+            AzureLanLog.i("MainActivity: recreate UI")
             isLoading = true
             loadingIndicator?.visibility = View.VISIBLE
             recreate()
         }
+    }
+
+    override fun onPurchaseAcked(purchase: Purchase) {
+        AzureLanLog.i("MainActivity: on purchase acked for purchase %s", purchase)
+        onPurchaseConsumed(purchase)
     }
 
     override fun onSubscriptionPurchasesQueryResultComplete(resultCode: Int) {
