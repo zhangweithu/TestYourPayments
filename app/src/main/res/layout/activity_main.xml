@@ -82,6 +82,22 @@
                     android:textColor="@android:color/white"
                     android:text="@string/weekly_sub" />
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/white"
+                    android:gravity="center"
+                    android:text="@string/logs" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/view_logs"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="3dp"
+                    android:background="@drawable/rounded_corner_bg"
+                    android:textColor="@android:color/white"
+                    android:text="@string/view" />
+
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
 

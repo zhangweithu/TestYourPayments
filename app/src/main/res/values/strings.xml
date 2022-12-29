@@ -24,6 +24,8 @@
     <string name="weekly_sub">Weekly Service</string>
     <string name="format_with_state">%1$s (%2$s)</string>
     <string name="active">Active</string>
+    <string name="logs">Logs</string>
+    <string name="view">View</string>
 
 
     <string name="preference_file_key">Test Payment Preference</string>

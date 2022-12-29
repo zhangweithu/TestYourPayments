@@ -10,15 +10,21 @@ android {
         applicationId "com.azurelan.testyourpayments"
         minSdk 28
         targetSdk 32
-        versionCode 12
-        versionName "12.0"
+        versionCode 15
+        versionName "15.0"
 
     }
 
     buildTypes {
+
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            minifyEnabled false
+            debuggable true
+            versionNameSuffix '-debug'
         }
     }
     buildFeatures {

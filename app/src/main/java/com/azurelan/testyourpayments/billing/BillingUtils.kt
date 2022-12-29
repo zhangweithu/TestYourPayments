@@ -14,6 +14,7 @@ import com.android.billingclient.api.BillingClientStateListener
 import com.android.billingclient.api.PurchasesUpdatedListener
 import com.azurelan.testyourpayments.R
 import com.azurelan.testyourpayments.utils.AzureLanLog
+import com.azurelan.testyourpayments.externalvisiblelog.ExternallyVisibleLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -346,7 +347,7 @@ class BillingUtils(
 
     fun registerSubscriptionProductsQueryListener(
         subscriptionProductsQueryListener: SubscriptionProductsQueryListener) {
-        AzureLanLog.d("BillingUtils: added listener: %s", subscriptionProductsQueryListener)
+        AzureLanLog.d("BU: added listener: %s", subscriptionProductsQueryListener)
         subscriptionProductsQueryListeners.add(subscriptionProductsQueryListener)
     }
 
@@ -355,7 +356,7 @@ class BillingUtils(
     }
 
     fun registerInAppProductsQueryListener(inAppProductsQueryListener: InAppProductsQueryListener) {
-        AzureLanLog.d("BillingUtils: added listener: %s", inAppProductsQueryListener)
+        AzureLanLog.d("BU: added listener: %s", inAppProductsQueryListener)
         inAppProductsQueryListeners.add(inAppProductsQueryListener)
     }
 
@@ -376,7 +377,7 @@ class BillingUtils(
 
     /** Disconnect the billing service when no longer used. */
     fun cleanUpBillingClient() {
-        AzureLanLog.d("BillingUtils: clean up")
+        logEvent("BU: clean up")
         billingClient?.endConnection()
         purchaseConsumedListeners.clear()
         purchaseAckedListeners.clear()
@@ -409,8 +410,9 @@ class BillingUtils(
             queryOwnedInAppPurchases()
             queryAvailableInAppProducts()
         } else {
-            AzureLanLog.e(
-                "BillingUtils: error on setting up billing %d", setupBillingResult.responseCode)
+            logEvent(
+                String.format(
+                    "BU: error on setting up billing: code %d", setupBillingResult.responseCode))
             val callback = onBillingConnectFailedCallback
             onBillingConnectFailedCallback = null
             callback?.run()
@@ -429,7 +431,7 @@ class BillingUtils(
 
     /** Query products available for sale */
     private fun queryAvailableInAppProducts() {
-        AzureLanLog.i("BillingUtils: query available inapp products")
+        logEvent("BU: querying available inapp products")
         val queryProductDetailsParams =
             QueryProductDetailsParams.newBuilder()
                 .setProductList(
@@ -458,9 +460,11 @@ class BillingUtils(
                     availableInAppProductDetailsList = productDetailsList
                 }
             } else {
-                AzureLanLog.e(
-                    "BillingUtils: error on query available inapp products %d",
-                    queryBillingResult.responseCode)
+                logEvent(
+                    String.format(
+                        "BU: error on query available inapp products %d",
+                        queryBillingResult.responseCode)
+                )
                 val errorMessage = getToastMessage(queryBillingResult.responseCode)
                 errorMessage?.let {
                     Handler(Looper.getMainLooper()).post {
@@ -479,13 +483,16 @@ class BillingUtils(
                     .onInAppProductsQueryResultComplete(queryBillingResult.responseCode)
             }
             AzureLanLog.d(
-                "BillingUtils: in app products result list %s", productDetailsList)
+                "BU: in app products result list %s", productDetailsList)
+            logEvent(
+                String.format(
+                    "BU: in app products result list size is %d", productDetailsList.size))
         }
     }
 
     /** Query subscriptions available for sale */
     private fun queryAvailableSubscriptions() {
-        AzureLanLog.i("BillingUtils: query available subscription products")
+        logEvent("BU: querying available subscription products")
         val queryProductDetailsParams =
             QueryProductDetailsParams.newBuilder()
                 .setProductList(
@@ -510,9 +517,11 @@ class BillingUtils(
                     availableSubscriptionDetailsList = productDetailsList
                 }
             } else {
-                AzureLanLog.e(
-                    "BillingUtils: error on query available subscription products %d",
-                    queryBillingResult.responseCode)
+                logEvent(
+                    String.format(
+                        "BU: error on query available subscription products, code %d",
+                        queryBillingResult.responseCode)
+                )
                 val errorMessage = getToastMessage(queryBillingResult.responseCode)
                 errorMessage?.let {
                     Handler(Looper.getMainLooper()).post {
@@ -531,13 +540,17 @@ class BillingUtils(
                     .onSubscriptionProductsQueryResultComplete(queryBillingResult.responseCode)
             }
             AzureLanLog.d(
-                "BillingUtils: subscription products result list %s", productDetailsList)
+                "BU: subscription products result list %s", productDetailsList)
+            logEvent(
+                String.format(
+                    "BU: subscription products result list size is %d",
+                    productDetailsList.size))
         }
     }
 
     /** Query subscription purchases currently owned */
     fun queryOwnedSubscriptionPurchases() {
-        AzureLanLog.i("BillingUtils: query owned subscription purchases")
+        logEvent("BU: querying owned subscription purchases")
         val queryPurchasesParams =
             QueryPurchasesParams.newBuilder()
                 .setProductType(BillingClient.ProductType.SUBS)
@@ -547,23 +560,28 @@ class BillingUtils(
             // check billingResult
             // process returned productDetailsList
             if (queryBillingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                AzureLanLog.i(
-                    "BillingUtils: acking subscription purchase not yet acked: %s", purchases)
+                logEvent(
+                    String.format(
+                        "BU: acking subscription purchase not yet acked: %s",
+                        purchases))
                 if (purchases.isNotEmpty()) {
                     purchasedSubscriptionsList = purchases
                     // If we found purchases not yet acked, ack them here now
                     for (purchase in purchases) {
                         if (!purchase.isAcknowledged) {
-                            AzureLanLog.i(
-                                "BillingUtils: acking purchase not yet acked: %s", purchase)
+                            logEvent(
+                                String.format(
+                                    "BU: acking purchase not yet acked: %s", purchase))
                             handlePurchase(purchase)
                         }
                     }
                 }
             } else {
-                AzureLanLog.e(
-                    "BillingUtils: error on query owned subscription purchases %d",
-                    queryBillingResult.responseCode)
+                logEvent(
+                    String.format(
+                        "BU: error on query owned subscription purchases, code %d",
+                        queryBillingResult.responseCode)
+                )
                 val errorMessage = getToastMessage(queryBillingResult.responseCode)
                 errorMessage?.let {
                     Handler(Looper.getMainLooper()).post {
@@ -582,13 +600,17 @@ class BillingUtils(
                     .onSubscriptionPurchasesQueryResultComplete(queryBillingResult.responseCode)
             }
             AzureLanLog.i(
-                "BillingUtils: query owned subscription purchases result list %s", purchases)
+                "BU: query owned subscription purchases result list %s", purchases)
+            logEvent(
+                String.format(
+                    "BU: query owned subscription purchases result list size is %d",
+                    purchases.size))
         }
     }
 
     /** Query in-app purchases */
     fun queryOwnedInAppPurchases() {
-        AzureLanLog.i("BillingUtils: query owned inapp purchases")
+        logEvent("BU: querying owned inapp purchases")
         val queryPurchasesParams =
             QueryPurchasesParams.newBuilder()
                 .setProductType(BillingClient.ProductType.INAPP)
@@ -598,23 +620,28 @@ class BillingUtils(
             // check billingResult
             // process returned productDetailsList
             if (queryBillingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                AzureLanLog.i(
-                    "BillingUtils: acking inapp purchase not yet acked: %s", purchases)
+                logEvent(
+                    String.format(
+                    "BU: acking inapp purchase not yet acked: %s", purchases))
                 if (purchases.isNotEmpty()) {
                     ownedInAppPurchasesList = purchases
                     // If we found purchases not yet acked, ack them here now
                     for (purchase in purchases) {
                         if (!purchase.isAcknowledged) {
-                            AzureLanLog.i(
-                                "BillingUtils: acking inapp purchase not yet acked: %s",
-                                purchase)
+                            logEvent(
+                                String.format(
+                                    "BU: acking inapp purchase not yet acked: %s",
+                                    purchase)
+                            )
                             handlePurchase(purchase)
                         } else {
                             // Acked purchases. Check if any are consumable but not correctly consumed
                             if (isPurchaseConsumable(purchase)) {
-                                AzureLanLog.i(
-                                    "BillingUtils: consuming purchase in queryOwnedInAppPurchases(): %s",
-                                    purchase)
+                                logEvent(
+                                    String.format(
+                                        "BU: consuming purchase in queryOwnedInAppPurchases(): %s",
+                                        purchase)
+                                )
                                 billingClient?.consumeAsync(
                                     ConsumeParams.newBuilder().setPurchaseToken(purchase.purchaseToken)
                                         .build(),
@@ -622,15 +649,17 @@ class BillingUtils(
                                     for (purchaseConsumedListener in purchaseConsumedListeners) {
                                         purchaseConsumedListener.onPurchaseConsumed(purchase)
                                     }
-                                    AzureLanLog.i("BillingUtils: consumed purchase in queryOwnedInAppPurchases()")
+                                    logEvent("BU: consumed purchase in queryOwnedInAppPurchases()")
                                 }
                             }
                         }
                     }
                 }
             } else {
-                AzureLanLog.e("BillingUtils: error on query owned inapp purchases %d",
-                    queryBillingResult.responseCode)
+                logEvent(
+                    String.format(
+                        "BU: error on query owned inapp purchases %d",
+                        queryBillingResult.responseCode))
                 val errorMessage = getToastMessage(queryBillingResult.responseCode)
                 errorMessage?.let {
                     Handler(Looper.getMainLooper()).post {
@@ -648,14 +677,15 @@ class BillingUtils(
                 inAppPurchasesQueryListener
                     .onInAppPurchasesQueryResultComplete(queryBillingResult.responseCode)
             }
-            AzureLanLog.d("BillingUtils: owned in app purchases result list %s", purchases)
+            AzureLanLog.d("BU: owned in app purchases result list %s", purchases)
+            logEvent(String.format("BU: owned in app purchases result list size is %d", purchases.size))
         }
     }
 
     override fun onBillingServiceDisconnected() {
         // Try to restart the connection on the next request to
         // Google Play by calling the startConnection() method.
-        AzureLanLog.e("BillingUtils: connecting to Play Billing Service failed")
+        logEvent("BU: connecting to Play Billing Service failed")
         Handler(Looper.getMainLooper()).post {
             Toast
                 .makeText(
@@ -675,15 +705,16 @@ class BillingUtils(
         billingResult: BillingResult,
         purchases: MutableList<Purchase>?
     ) {
-        AzureLanLog.i("BillingUtils: purchase updated: purchases=%s", purchases.toString())
+        logEvent(String.format("BU: purchase updated: purchases=%s", purchases.toString()))
         if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && purchases != null) {
             for (purchase in purchases) {
-                AzureLanLog.i("BillingUtils: handling purchase not yet acked: %s", purchase)
+                logEvent(String.format("BU: handling purchase not yet acked: %s", purchase))
                 handlePurchase(purchase)
             }
         } else {
-            AzureLanLog.e(
-                "BillingUtils: error on purchase updated %d", billingResult.responseCode)
+            logEvent(
+                String.format("BU: error on purchase updated %d", billingResult.responseCode)
+            )
             val errorMessage = getToastMessage(billingResult.responseCode)
             errorMessage?.let {
                 Handler(Looper.getMainLooper()).post {
@@ -700,24 +731,36 @@ class BillingUtils(
     }
 
     private fun handlePurchase(purchase: Purchase) {
-        AzureLanLog.i("BillingUtils: handling purchase in handlePurchase()")
+        logEvent("BU: handling purchase in handlePurchase()")
         if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
             if (!purchase.isAcknowledged) {
                 val acknowledgePurchaseParams = AcknowledgePurchaseParams.newBuilder()
                     .setPurchaseToken(purchase.purchaseToken)
                 viewModel.viewModelScope.launch {
-                    AzureLanLog.i("BillingUtils: acking purchase in handlePurchase()")
+                    logEvent("BU: acking purchase in handlePurchase()")
                     val ackPurchaseResult = withContext(Dispatchers.IO) {
                         billingClient?.acknowledgePurchase(acknowledgePurchaseParams.build())
                     }
                     if (ackPurchaseResult?.responseCode == BillingClient.BillingResponseCode.OK) {
-                        AzureLanLog.i("BillingUtils: acking purchase successful in handlePurchase()")
+                        logEvent("BU: acking purchase successful in handlePurchase()")
                         if (isPurchaseConsumable(purchase)) {
-                            AzureLanLog.i("BillingUtils: consuming purchase in handlePurchase()")
+                            logEvent("BU: consumable; attempt to consume purchase in handlePurchase()")
                             billingClient?.consumeAsync(
                                 ConsumeParams.newBuilder().setPurchaseToken(purchase.purchaseToken)
                                     .build(),
                             ) { result, purchaseToken ->
+                                if (result.responseCode == BillingClient.BillingResponseCode.OK) {
+                                    logEvent(
+                                        "BU: consuming purchase successful in handlePurchase()"
+                                    )
+                                } else {
+                                    logEvent(
+                                        String.format(
+                                            "BU: consuming purchase failing with result code %d in handlePurchase()",
+                                            result.responseCode,
+                                        )
+                                    )
+                                }
                                 for (purchaseAckedListener in purchaseAckedListeners) {
                                     purchaseAckedListener.onPurchaseAcked(purchase)
                                 }
@@ -728,8 +771,10 @@ class BillingUtils(
                             }
                         }
                     } else {
-                        AzureLanLog.i("BillingUtils: acking purchase failing with code %s",
-                            ackPurchaseResult?.responseCode.toString())
+                        logEvent(
+                            String.format(
+                                "BU: acking purchase failing with code %s",
+                                ackPurchaseResult?.responseCode.toString()))
                     }
                 }
             }
@@ -739,5 +784,10 @@ class BillingUtils(
     private fun isPurchaseConsumable(purchase: Purchase): Boolean {
         return purchase.products.contains(PRODUCT_ID_IN_APP_PRODUCT_TREE)
                 || purchase.products.contains(PRODUCT_ID_IN_APP_PRODUCT_ROSE)
+    }
+
+    private fun logEvent(msg: String) {
+        AzureLanLog.i(msg)
+        ExternallyVisibleLog.appendNewLog(msg)
     }
 }

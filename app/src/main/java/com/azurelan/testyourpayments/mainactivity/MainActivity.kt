@@ -1,5 +1,6 @@
 package com.azurelan.testyourpayments.mainactivity
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -12,8 +13,10 @@ import com.android.billingclient.api.Purchase
 import com.azurelan.testyourpayments.R
 import com.azurelan.testyourpayments.billing.BillingUtils
 import com.azurelan.testyourpayments.databinding.ActivityMainBinding
+import com.azurelan.testyourpayments.externalvisiblelog.ExternalVisibleLogActivity
 import com.azurelan.testyourpayments.preferencevaluestore.PreferencesAccessUtils
 import com.azurelan.testyourpayments.utils.AzureLanLog
+import com.azurelan.testyourpayments.externalvisiblelog.ExternallyVisibleLog
 import com.azurelan.testyourpayments.viewmodels.BillingViewModel
 
 class MainActivity : AppCompatActivity(),
@@ -40,6 +43,7 @@ BillingUtils.PurchaseConsumedListener{
     private var tree: Button? = null
     private var rose: Button? = null
     private var weekly: Button? = null
+    private var viewLogs: Button? = null
 
     private var treeCount = 0
     private var roseCount = 0
@@ -59,6 +63,7 @@ BillingUtils.PurchaseConsumedListener{
         tree = findViewById(R.id.tree)
         rose = findViewById(R.id.rose)
         weekly = findViewById(R.id.weekly)
+        viewLogs = findViewById(R.id.view_logs)
 
         gardener?.setOnClickListener {
             billingUtils?.let {
@@ -114,6 +119,12 @@ BillingUtils.PurchaseConsumedListener{
             this, getString(R.string.preference_tree_key), "0").toInt()
         roseCount = PreferencesAccessUtils.readPreferenceString(
             this, getString(R.string.preference_rose_key), "0").toInt()
+
+        viewLogs?.setOnClickListener {
+            startActivity(
+                Intent(this, ExternalVisibleLogActivity::class.java)
+            )
+        }
         updateButtonTexts()
     }
 
@@ -151,7 +162,7 @@ BillingUtils.PurchaseConsumedListener{
         super.onStart()
 
         if (!hasInitiatedBilling) {
-            AzureLanLog.i("MainActivity: initializing Billing")
+            logEvent("MA: initializing Billing")
             Handler(Looper.getMainLooper()).post { initBillingIfApplicable() }
         }
     }
@@ -159,7 +170,7 @@ BillingUtils.PurchaseConsumedListener{
     override fun onResume() {
         super.onResume()
         if (hasInitiatedBilling) {
-            AzureLanLog.i("MainActivity: query purchases in onResume()")
+            logEvent("MA: querying purchases in onResume()")
             billingUtils?.queryOwnedSubscriptionPurchases()
             billingUtils?.queryOwnedInAppPurchases()
         }
@@ -185,7 +196,7 @@ BillingUtils.PurchaseConsumedListener{
             )
         }
         Handler(Looper.getMainLooper()).post {
-            AzureLanLog.i("MainActivity: recreate UI")
+            logEvent("MA: recreate UI")
             isLoading = true
             loadingIndicator?.visibility = View.VISIBLE
             recreate()
@@ -293,5 +304,10 @@ BillingUtils.PurchaseConsumedListener{
         // Do sth about error loading
         isLoading = false
         loadingIndicator?.visibility = View.GONE
+    }
+
+    private fun logEvent(msg: String) {
+        AzureLanLog.i(msg)
+        ExternallyVisibleLog.appendNewLog(msg)
     }
 }
