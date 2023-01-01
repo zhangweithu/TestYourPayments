@@ -764,6 +764,9 @@ class BillingUtils(
                                 for (purchaseAckedListener in purchaseAckedListeners) {
                                     purchaseAckedListener.onPurchaseAcked(purchase)
                                 }
+                                for (purchaseConsumedListener in purchaseConsumedListeners) {
+                                    purchaseConsumedListener.onPurchaseConsumed(purchase)
+                                }
                             }
                         } else {
                             for (purchaseAckedListener in purchaseAckedListeners) {
