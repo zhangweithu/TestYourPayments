@@ -333,21 +333,24 @@ class BillingUtils(
     private var onBillingConnectFailedCallback: Runnable? = null
 
     fun registerPurchaseConsumedListener(purchaseConsumedListener: PurchaseConsumedListener) {
+        AzureLanLog.d("BU: added purchase consumed listener: %s", purchaseConsumedListener)
         purchaseConsumedListeners.add(purchaseConsumedListener)
     }
 
     fun registerPurchaseAckedListener(purchaseAckedListener: PurchaseAckedListener) {
+        AzureLanLog.d("BU: added purchase acked listener: %s", purchaseAckedListener)
         purchaseAckedListeners.add(purchaseAckedListener)
     }
 
     fun registerSubscriptionPurchasesQueryListener(
         subscriptionPurchasesQueryListener: SubscriptionPurchasesQueryListener) {
+        AzureLanLog.d("BU: added sub purchase query listener: %s", subscriptionPurchasesQueryListener)
         subscriptionPurchasesQueryListeners.add(subscriptionPurchasesQueryListener)
     }
 
     fun registerSubscriptionProductsQueryListener(
         subscriptionProductsQueryListener: SubscriptionProductsQueryListener) {
-        AzureLanLog.d("BU: added listener: %s", subscriptionProductsQueryListener)
+        AzureLanLog.d("BU: added sub product query listener: %s", subscriptionProductsQueryListener)
         subscriptionProductsQueryListeners.add(subscriptionProductsQueryListener)
     }
 
@@ -356,11 +359,12 @@ class BillingUtils(
     }
 
     fun registerInAppProductsQueryListener(inAppProductsQueryListener: InAppProductsQueryListener) {
-        AzureLanLog.d("BU: added listener: %s", inAppProductsQueryListener)
+        AzureLanLog.d("BU: added inapp product query listener: %s", inAppProductsQueryListener)
         inAppProductsQueryListeners.add(inAppProductsQueryListener)
     }
 
     fun registerInAppPurchasesQueryListener(inAppPurchasesQueryListener: InAppPurchasesQueryListener) {
+        AzureLanLog.d("BU: added inapp purchase query listener: %s", inAppPurchasesQueryListener)
         inAppPurchasesQueryListeners.add(inAppPurchasesQueryListener)
     }
 
@@ -478,7 +482,9 @@ class BillingUtils(
                     }
                 }
             }
-            for (inAppProductsQueryListener in inAppProductsQueryListeners) {
+            // Make a defensive copy because the set may change during recreate
+            val currentInAppProductsQueryListeners = ArrayList(inAppProductsQueryListeners)
+            for (inAppProductsQueryListener in currentInAppProductsQueryListeners) {
                 inAppProductsQueryListener
                     .onInAppProductsQueryResultComplete(queryBillingResult.responseCode)
             }
@@ -535,7 +541,10 @@ class BillingUtils(
                     }
                 }
             }
-            for (subscriptionProductsQueryListener in subscriptionProductsQueryListeners) {
+            // Make a defensive copy because the set may change during recreate
+            val currentSubscriptionProductsQueryListener =
+                ArrayList(subscriptionProductsQueryListeners)
+            for (subscriptionProductsQueryListener in currentSubscriptionProductsQueryListener) {
                 subscriptionProductsQueryListener
                     .onSubscriptionProductsQueryResultComplete(queryBillingResult.responseCode)
             }
@@ -595,7 +604,10 @@ class BillingUtils(
                     }
                 }
             }
-            for (subscriptionPurchasesQueryListener in subscriptionPurchasesQueryListeners) {
+            // Make a defensive copy because the set may change during recreate
+            val currentSubscriptionPurchasesQueryListeners =
+                ArrayList(subscriptionPurchasesQueryListeners)
+            for (subscriptionPurchasesQueryListener in currentSubscriptionPurchasesQueryListeners) {
                 subscriptionPurchasesQueryListener
                     .onSubscriptionPurchasesQueryResultComplete(queryBillingResult.responseCode)
             }
@@ -646,7 +658,10 @@ class BillingUtils(
                                     ConsumeParams.newBuilder().setPurchaseToken(purchase.purchaseToken)
                                         .build(),
                                 ) { result, purchaseToken ->
-                                    for (purchaseConsumedListener in purchaseConsumedListeners) {
+                                    // Make a defensive copy because the set may change during recreate
+                                    val currentPurchaseConsumedListeners =
+                                        ArrayList(purchaseConsumedListeners)
+                                    for (purchaseConsumedListener in currentPurchaseConsumedListeners) {
                                         purchaseConsumedListener.onPurchaseConsumed(purchase)
                                     }
                                     logEvent("BU: consumed purchase in queryOwnedInAppPurchases()")
@@ -673,7 +688,9 @@ class BillingUtils(
                     }
                 }
             }
-            for (inAppPurchasesQueryListener in inAppPurchasesQueryListeners) {
+            // Make a defensive copy because the set may change during recreate
+            val currentInAppPurchasesQueryListeners = ArrayList(inAppPurchasesQueryListeners)
+            for (inAppPurchasesQueryListener in currentInAppPurchasesQueryListeners) {
                 inAppPurchasesQueryListener
                     .onInAppPurchasesQueryResultComplete(queryBillingResult.responseCode)
             }
@@ -761,15 +778,25 @@ class BillingUtils(
                                         )
                                     )
                                 }
-                                for (purchaseAckedListener in purchaseAckedListeners) {
+                                // Make a defensive copy because the set may change during recreate
+                                val currentPurchaseAckedListeners = ArrayList(purchaseAckedListeners)
+                                val currentPurchaseConsumedListeners = ArrayList(purchaseConsumedListeners)
+                                for (purchaseAckedListener in currentPurchaseAckedListeners) {
                                     purchaseAckedListener.onPurchaseAcked(purchase)
                                 }
-                                for (purchaseConsumedListener in purchaseConsumedListeners) {
+                                AzureLanLog.d("BU: handling purchase consume listeners")
+                                for (purchaseConsumedListener in currentPurchaseConsumedListeners) {
+                                    AzureLanLog.d(
+                                        "BU: triggering purchase consume listener: %s," +
+                                                " for purchase token %s",
+                                        purchaseConsumedListener,
+                                        purchase.purchaseToken)
                                     purchaseConsumedListener.onPurchaseConsumed(purchase)
                                 }
                             }
                         } else {
-                            for (purchaseAckedListener in purchaseAckedListeners) {
+                            val currentPurchaseAckedListeners = ArrayList(purchaseAckedListeners)
+                            for (purchaseAckedListener in currentPurchaseAckedListeners) {
                                 purchaseAckedListener.onPurchaseAcked(purchase)
                             }
                         }

@@ -50,6 +50,7 @@ BillingUtils.PurchaseConsumedListener{
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        AzureLanLog.d("MA: onCreate. Self: %s", this)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -160,6 +161,7 @@ BillingUtils.PurchaseConsumedListener{
 
     override fun onStart() {
         super.onStart()
+        AzureLanLog.d("MA: onStart. Self: %s", this)
 
         if (!hasInitiatedBilling) {
             logEvent("MA: initializing Billing")
@@ -178,7 +180,7 @@ BillingUtils.PurchaseConsumedListener{
 
     override fun onPurchaseConsumed(purchase: Purchase) {
         if (purchase.products.contains(BillingUtils.PRODUCT_ID_IN_APP_PRODUCT_TREE)) {
-            AzureLanLog.i("MainActivity: on purchase consumed for purchase %s", purchase)
+            AzureLanLog.i("MainActivity: %s on purchase consumed for purchase %s", this, purchase)
             treeCount++
             PreferencesAccessUtils.writePreferenceString(
                 this,
@@ -187,7 +189,7 @@ BillingUtils.PurchaseConsumedListener{
             )
         }
         if (purchase.products.contains(BillingUtils.PRODUCT_ID_IN_APP_PRODUCT_ROSE)) {
-            AzureLanLog.i("MainActivity: on purchase consumed for purchase %s", purchase)
+            AzureLanLog.i("MainActivity: %s on purchase consumed for purchase %s", this, purchase)
             roseCount++
             PreferencesAccessUtils.writePreferenceString(
                 this,
@@ -205,7 +207,6 @@ BillingUtils.PurchaseConsumedListener{
 
     override fun onPurchaseAcked(purchase: Purchase) {
         AzureLanLog.i("MainActivity: on purchase acked for purchase %s", purchase)
-        onPurchaseConsumed(purchase)
     }
 
     override fun onSubscriptionPurchasesQueryResultComplete(resultCode: Int) {
