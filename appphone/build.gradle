@@ -8,10 +8,10 @@ android {
 
     defaultConfig {
         applicationId "com.azurelan.testyourpayments"
-        minSdk 21
+        minSdk 24
         targetSdk 32
-        versionCode 1
-        versionName "1.0"
+        versionCode 201
+        versionName "20.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
