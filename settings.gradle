@@ -13,5 +13,6 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "Test Your Payments"
-include ':app'
+include ':appWear'
 include ':TestPaymentFlowsShared'
+include ':appphone'

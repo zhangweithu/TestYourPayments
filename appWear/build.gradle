@@ -1,5 +1,5 @@
 plugins {
-    id 'com.android.library'
+    id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
 }
 
@@ -7,37 +7,46 @@ android {
     compileSdk 32
 
     defaultConfig {
-        minSdk 21
+        applicationId "com.azurelan.testyourpayments"
+        minSdk 28
         targetSdk 32
+        versionCode 200
+        versionName "20.0"
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles "consumer-rules.pro"
     }
 
     buildTypes {
+
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+        debug {
+            minifyEnabled false
+            debuggable true
+            versionNameSuffix '-debug'
+        }
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = '1.8'
+    buildFeatures {
+        viewBinding true
     }
 }
 
 dependencies {
+    implementation 'com.google.android.material:material:1.7.0'
 
     implementation 'androidx.core:core-ktx:1.8.0'
+    implementation 'com.google.android.gms:play-services-wearable:18.0.0'
+    implementation 'androidx.percentlayout:percentlayout:1.0.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.2.1'
+    implementation 'androidx.wear:wear:1.2.0'
     implementation 'com.android.billingclient:billing-ktx:5.1.0'
 
     // Coroutine
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1'
     implementation 'androidx.appcompat:appcompat:1.5.1'
+    implementation project(path: ':TestPaymentFlowsShared')
 
     def lifecycle_version = "2.5.1"
     def arch_version = "2.1.0"

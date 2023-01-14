@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Test Payment Flows</string>
+
+    <!-- Billing -->
+    <string name="billing_cannot_setup">Unable to setup the Play Billing Service.</string>
+    <string name="billing_cannot_connect">Unable to connect to the Play Billing Service.</string>
+    <string name="billing_user_cancelled">Cancelled by User</string>
+    <string name="billing_service_unavailable">Play billing service is not available</string>
+    <string name="billing_already_owned">You already own this item</string>
+    <string name="billing_item_unavailable">This item is not available</string>
+    <string name="billing_generic_error">An unexpected error occurred.</string>
+
+    <string name="preference_file_key">Test Payment Preference</string>
+    <string name="preference_rose_key">Rose Count</string>
+    <string name="preference_tree_key">Tree Counnt</string>
+</resources>
