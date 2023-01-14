@@ -11,7 +11,16 @@ class ExternalVisibleLogActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_external_visible_log)
 
+        setSupportActionBar(findViewById(R.id.toolbar))
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_baseline_clear_24)
+
         val logView: TextView = findViewById(R.id.log)
         logView.text = ExternallyVisibleLog.getLog()
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        finish() // close this activity as oppose to navigating up
+        return false
     }
 }
