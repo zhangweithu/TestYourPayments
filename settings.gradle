@@ -16,3 +16,4 @@ rootProject.name = "Test Your Payments"
 include ':appWear'
 include ':TestPaymentFlowsShared'
 include ':appphone'
+include ':appTv'
