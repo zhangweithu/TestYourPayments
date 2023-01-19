@@ -20,7 +20,8 @@ import com.azurelan.testyourpayments.shared.viewmodels.BillingViewModel
 class MainActivity : AppCompatActivity(),
 BillingActionsHelper.OnPurchaseConsumedContinueRunnable,
 BillingActionsHelper.OnPurchaseAckedContinueRunnable,
-BillingActionsHelper.OnInitializeQueryCompleteRunnable  {
+BillingActionsHelper.OnInitializeQueryCompleteRunnable,
+BillingUtils.UiActions {
 
     private var loadingIndicator: View? = null
     private var isLoading = false
@@ -44,9 +45,8 @@ BillingActionsHelper.OnInitializeQueryCompleteRunnable  {
         billingActionsHelper = BillingActionsHelper(this)
 
         viewModel = ViewModelProvider(this)[BillingViewModel::class.java]
-        isLoading = true
         loadingIndicator = findViewById(R.id.loading_indicator)
-        loadingIndicator?.visibility = View.VISIBLE
+        uiStartLoading()
 
         gardener = findViewById(R.id.gardener)
         tree = findViewById(R.id.tree)
@@ -58,6 +58,7 @@ BillingActionsHelper.OnInitializeQueryCompleteRunnable  {
         billingActionsHelper.registerOnPurchaseConsumedContinueRunnable(this)
         billingActionsHelper.registerOnPurchaseAckedContinueRunnable(this)
         billingActionsHelper.registerOnInitializeQueryCompleteRunnable(this)
+        billingActionsHelper.registerUiActions(this)
 
         gardener?.setOnClickListener {
             billingActionsHelper.launchPurchaseFlowFor(BillingProduct.GARDENER)
@@ -102,29 +103,49 @@ BillingActionsHelper.OnInitializeQueryCompleteRunnable  {
     }
 
     override fun onPurchaseAckedAndConsumedContinue() {
-        recreateUI()
+        reinitButtonTexts()
     }
 
     override fun onPurchaseAckedContinue() {
-        recreateUI()
+        reinitButtonTexts()
+    }
+
+    private fun reinitButtonTexts() {
+        Handler(Looper.getMainLooper()).post {
+            logEvent("MA: update display text")
+            updateButtonTexts()
+            uiEndLoading()
+        }
     }
 
     private fun recreateUI() {
         Handler(Looper.getMainLooper()).post {
             logEvent("MA: recreate UI")
-            isLoading = true
-            loadingIndicator?.visibility = View.VISIBLE
+            uiStartLoading()
             recreate()
         }
     }
 
     override fun onInitializeQueryComplete() {
         updateBehavior()
+        billingActionsHelper.resetStatusCodes()
+    }
+
+    override fun uiStartLoading() {
+        logEvent("MA: starting loading")
+        isLoading = true
+        loadingIndicator?.visibility = View.VISIBLE
+    }
+
+    override fun uiEndLoading() {
+        logEvent("MA: ending loading")
+        isLoading = false
+        loadingIndicator?.visibility = View.GONE
     }
 
     private fun updateBehavior() {
-        isLoading = false
-        loadingIndicator?.visibility = View.GONE
+        logEvent("MA: update behavior")
+        uiEndLoading()
         billingActionsHelper.clearOnBillingConnectFailedCallback()
         updateButtonTexts()
     }
@@ -167,8 +188,8 @@ BillingActionsHelper.OnInitializeQueryCompleteRunnable  {
 
     private fun handleBillingExceptionOnLoading() {
         // Do sth about error loading
-        isLoading = false
-        loadingIndicator?.visibility = View.GONE
+        logEvent("MA: handling billing exception")
+        uiEndLoading()
     }
 
     private fun logEvent(msg: String) {

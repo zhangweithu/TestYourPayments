@@ -37,6 +37,7 @@ class BillingActionsHelper(private val activity: Activity) :
     private lateinit var onPurchaseConsumedContinueRunnable: OnPurchaseConsumedContinueRunnable
     private lateinit var onPurchaseAckedContinueRunnable: OnPurchaseAckedContinueRunnable
     private lateinit var onInitializeQueryCompleteRunnable: OnInitializeQueryCompleteRunnable
+    private lateinit var uiActions: BillingUtils.UiActions
 
     interface OnPurchaseConsumedContinueRunnable {
         fun onPurchaseAckedAndConsumedContinue()
@@ -60,6 +61,10 @@ class BillingActionsHelper(private val activity: Activity) :
 
     fun registerOnInitializeQueryCompleteRunnable(listener: OnInitializeQueryCompleteRunnable) {
         onInitializeQueryCompleteRunnable = listener
+    }
+
+    fun registerUiActions(uiActions: BillingUtils.UiActions) {
+        this.uiActions = uiActions
     }
 
     fun initialize() {
@@ -103,6 +108,7 @@ class BillingActionsHelper(private val activity: Activity) :
         billingUtils?.registerSubscriptionProductsQueryListener(this)
         billingUtils?.registerInAppPurchasesQueryListener(this)
         billingUtils?.registerInAppProductsQueryListener(this)
+        billingUtils?.registerUiActions(uiActions)
         // Must only call setup after the listener is successfully registered
         billingUtils?.setupBillingClient(activity)
 
@@ -265,5 +271,12 @@ class BillingActionsHelper(private val activity: Activity) :
     private fun logEvent(msg: String) {
         AzureLanLog.i(msg)
         ExternallyVisibleLog.appendNewLog(msg)
+    }
+
+    fun resetStatusCodes() {
+        subscriptionPurchasesQueryResultCode = null
+        subProductsQueryResultsCode = null
+        inAppPurchaseQueryResultCode = null
+        inAppProductsQueryResultCode = null
     }
 }

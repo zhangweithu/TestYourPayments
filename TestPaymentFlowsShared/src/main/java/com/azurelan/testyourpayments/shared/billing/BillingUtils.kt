@@ -324,6 +324,11 @@ class BillingUtils(
         fun onInAppProductsQueryResultComplete(resultCode: Int)
     }
 
+    interface UiActions {
+        fun uiStartLoading()
+        fun uiEndLoading()
+    }
+
     private val purchaseConsumedListeners = mutableSetOf<PurchaseConsumedListener>()
     private val purchaseAckedListeners = mutableSetOf<PurchaseAckedListener>()
     private val subscriptionPurchasesQueryListeners = mutableSetOf<SubscriptionPurchasesQueryListener>()
@@ -331,6 +336,7 @@ class BillingUtils(
     private val inAppPurchasesQueryListeners = mutableSetOf<InAppPurchasesQueryListener>()
     private val inAppProductsQueryListeners = mutableSetOf<InAppProductsQueryListener>()
     private var onBillingConnectFailedCallback: Runnable? = null
+    private var uiActions: UiActions? = null
 
     fun registerPurchaseConsumedListener(purchaseConsumedListener: PurchaseConsumedListener) {
         AzureLanLog.d("BU: added purchase consumed listener: %s", purchaseConsumedListener)
@@ -366,6 +372,10 @@ class BillingUtils(
     fun registerInAppPurchasesQueryListener(inAppPurchasesQueryListener: InAppPurchasesQueryListener) {
         AzureLanLog.d("BU: added inapp purchase query listener: %s", inAppPurchasesQueryListener)
         inAppPurchasesQueryListeners.add(inAppPurchasesQueryListener)
+    }
+
+    fun registerUiActions(uiActions: UiActions) {
+        this.uiActions = uiActions
     }
 
     fun clearOnBillingConnectFailedCallback() {
@@ -724,6 +734,7 @@ class BillingUtils(
     ) {
         logEvent(String.format("BU: purchase updated: purchases=%s", purchases.toString()))
         if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && purchases != null) {
+            uiActions?.uiStartLoading()
             for (purchase in purchases) {
                 logEvent(String.format("BU: handling purchase not yet acked: %s", purchase))
                 handlePurchase(purchase)
@@ -751,6 +762,7 @@ class BillingUtils(
         logEvent("BU: handling purchase in handlePurchase()")
         if (purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
             if (!purchase.isAcknowledged) {
+                uiActions?.uiStartLoading()
                 val acknowledgePurchaseParams = AcknowledgePurchaseParams.newBuilder()
                     .setPurchaseToken(purchase.purchaseToken)
                 viewModel.viewModelScope.launch {
@@ -801,6 +813,7 @@ class BillingUtils(
                             String.format(
                                 "BU: acking purchase failing with code %s",
                                 ackPurchaseResult?.responseCode.toString()))
+                        uiActions?.uiEndLoading()
                     }
                 }
             }
