@@ -470,9 +470,7 @@ class BillingUtils(
             // check billingResult
             // process returned productDetailsList
             if (queryBillingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                if (productDetailsList.isNotEmpty()) {
-                    availableInAppProductDetailsList = productDetailsList
-                }
+                availableInAppProductDetailsList = productDetailsList
             } else {
                 logEvent(
                     String.format(
@@ -529,9 +527,7 @@ class BillingUtils(
             // check billingResult
             // process returned productDetailsList
             if (queryBillingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                if (productDetailsList.isNotEmpty()) {
-                    availableSubscriptionDetailsList = productDetailsList
-                }
+                availableSubscriptionDetailsList = productDetailsList
             } else {
                 logEvent(
                     String.format(
@@ -583,16 +579,14 @@ class BillingUtils(
                     String.format(
                         "BU: acking subscription purchase not yet acked: %s",
                         purchases))
-                if (purchases.isNotEmpty()) {
-                    purchasedSubscriptionsList = purchases
-                    // If we found purchases not yet acked, ack them here now
-                    for (purchase in purchases) {
-                        if (!purchase.isAcknowledged) {
-                            logEvent(
-                                String.format(
-                                    "BU: acking purchase not yet acked: %s", purchase))
-                            handlePurchase(purchase)
-                        }
+                purchasedSubscriptionsList = purchases
+                // If we found purchases not yet acked, ack them here now
+                for (purchase in purchases) {
+                    if (!purchase.isAcknowledged) {
+                        logEvent(
+                            String.format(
+                                "BU: acking purchase not yet acked: %s", purchase))
+                        handlePurchase(purchase)
                     }
                 }
             } else {
@@ -644,38 +638,36 @@ class BillingUtils(
             if (queryBillingResult.responseCode == BillingClient.BillingResponseCode.OK) {
                 logEvent(
                     String.format(
-                    "BU: acking inapp purchase not yet acked: %s", purchases))
-                if (purchases.isNotEmpty()) {
-                    ownedInAppPurchasesList = purchases
-                    // If we found purchases not yet acked, ack them here now
-                    for (purchase in purchases) {
-                        if (!purchase.isAcknowledged) {
+                    "BU: acking inapp purchases if not yet acked: %s", purchases))
+                ownedInAppPurchasesList = purchases
+                // If we found purchases not yet acked, ack them here now
+                for (purchase in purchases) {
+                    if (!purchase.isAcknowledged) {
+                        logEvent(
+                            String.format(
+                                "BU: acking inapp purchase not yet acked: %s",
+                                purchase)
+                        )
+                        handlePurchase(purchase)
+                    } else {
+                        // Acked purchases. Check if any are consumable but not correctly consumed
+                        if (isPurchaseConsumable(purchase)) {
                             logEvent(
                                 String.format(
-                                    "BU: acking inapp purchase not yet acked: %s",
+                                    "BU: consuming purchase in queryOwnedInAppPurchases(): %s",
                                     purchase)
                             )
-                            handlePurchase(purchase)
-                        } else {
-                            // Acked purchases. Check if any are consumable but not correctly consumed
-                            if (isPurchaseConsumable(purchase)) {
-                                logEvent(
-                                    String.format(
-                                        "BU: consuming purchase in queryOwnedInAppPurchases(): %s",
-                                        purchase)
-                                )
-                                billingClient?.consumeAsync(
-                                    ConsumeParams.newBuilder().setPurchaseToken(purchase.purchaseToken)
-                                        .build(),
-                                ) { result, purchaseToken ->
-                                    // Make a defensive copy because the set may change during recreate
-                                    val currentPurchaseConsumedListeners =
-                                        ArrayList(purchaseConsumedListeners)
-                                    for (purchaseConsumedListener in currentPurchaseConsumedListeners) {
-                                        purchaseConsumedListener.onPurchaseAckedAndConsumed(purchase)
-                                    }
-                                    logEvent("BU: consumed purchase in queryOwnedInAppPurchases()")
+                            billingClient?.consumeAsync(
+                                ConsumeParams.newBuilder().setPurchaseToken(purchase.purchaseToken)
+                                    .build(),
+                            ) { result, purchaseToken ->
+                                // Make a defensive copy because the set may change during recreate
+                                val currentPurchaseConsumedListeners =
+                                    ArrayList(purchaseConsumedListeners)
+                                for (purchaseConsumedListener in currentPurchaseConsumedListeners) {
+                                    purchaseConsumedListener.onPurchaseAckedAndConsumed(purchase)
                                 }
+                                logEvent("BU: consumed purchase in queryOwnedInAppPurchases()")
                             }
                         }
                     }
@@ -706,6 +698,29 @@ class BillingUtils(
             }
             AzureLanLog.d("BU: owned in app purchases result list %s", purchases)
             logEvent(String.format("BU: owned in app purchases result list size is %d", purchases.size))
+        }
+    }
+
+    fun consumeGardenerProduct() {
+        ownedInAppPurchasesList?.let {
+            for (purchase in it) {
+                if ((purchase.products.contains(PRODUCT_ID_IN_APP_PRODUCT_BECOME_GARDENER))
+                    && purchase.isAcknowledged
+                    && purchase.purchaseState == Purchase.PurchaseState.PURCHASED) {
+                    billingClient?.consumeAsync(
+                        ConsumeParams.newBuilder().setPurchaseToken(purchase.purchaseToken)
+                            .build(),
+                    ) { result, purchaseToken ->
+                        // Make a defensive copy because the set may change during recreate
+                        val currentPurchaseConsumedListeners =
+                            ArrayList(purchaseConsumedListeners)
+                        for (purchaseConsumedListener in currentPurchaseConsumedListeners) {
+                            purchaseConsumedListener.onPurchaseAckedAndConsumed(purchase)
+                        }
+                        logEvent("BU: consumed purchase in consumeGardenProduct()")
+                    }
+                }
+            }
         }
     }
 

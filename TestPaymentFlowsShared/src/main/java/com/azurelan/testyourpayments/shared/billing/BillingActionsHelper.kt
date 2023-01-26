@@ -204,6 +204,14 @@ class BillingActionsHelper(private val activity: Activity) :
         }
     }
 
+    fun handleGardenerClick() {
+        if (!BillingUtils.isGardenerActive()) {
+            launchPurchaseFlowFor(BillingProduct.GARDENER)
+        } else {
+            billingUtils?.consumeGardenerProduct()
+        }
+    }
+
     fun launchPurchaseFlowFor(product: BillingProduct) {
         when(product) {
             BillingProduct.GARDENER -> {

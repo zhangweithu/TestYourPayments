@@ -61,7 +61,7 @@ BillingUtils.UiActions {
         billingActionsHelper.registerUiActions(this)
 
         gardener?.setOnClickListener {
-            billingActionsHelper.launchPurchaseFlowFor(BillingProduct.GARDENER)
+            billingActionsHelper.handleGardenerClick()
         }
         tree?.setOnClickListener {
             billingActionsHelper.launchPurchaseFlowFor(BillingProduct.TREE)
@@ -103,11 +103,13 @@ BillingUtils.UiActions {
     }
 
     override fun onPurchaseAckedAndConsumedContinue() {
-        reinitButtonTexts()
+        recreateUI()
+        //reinitButtonTexts()
     }
 
     override fun onPurchaseAckedContinue() {
-        reinitButtonTexts()
+        recreateUI()
+        //reinitButtonTexts()
     }
 
     private fun reinitButtonTexts() {
@@ -152,11 +154,7 @@ BillingUtils.UiActions {
 
     private fun updateButtonTexts() {
         if (BillingUtils.isGardenerActive()) {
-            gardener?.text = getString(
-                R.string.format_with_state,
-                getString(R.string.be_gardener),
-                getString(R.string.active),
-            )
+            gardener?.text = getString(R.string.reset_gardener)
         } else {
             gardener?.text = getString(R.string.be_gardener)
         }

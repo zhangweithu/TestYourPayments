@@ -10,8 +10,8 @@ android {
         applicationId "com.azurelan.testyourpayments"
         minSdk 24
         targetSdk 32
-        versionCode 2210
-        versionName "22.10"
+        versionCode 2310
+        versionName "23.10"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
