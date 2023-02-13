@@ -152,11 +152,7 @@ class BillingActionsHelper(private val activity: Activity) :
         Handler(Looper.getMainLooper()).post {
             AzureLanLog.i("MainActivity: on owned subscription purchases query result complete")
             subscriptionPurchasesQueryResultCode = resultCode
-            if (subProductsQueryResultsCode != null
-                && inAppPurchaseQueryResultCode != null
-                && inAppProductsQueryResultCode != null) {
-                onInitializeQueryCompleteRunnable.onInitializeQueryComplete()
-            }
+            onInitializeQueryCompleteIfReady()
         }
     }
 
@@ -164,11 +160,7 @@ class BillingActionsHelper(private val activity: Activity) :
         Handler(Looper.getMainLooper()).post {
             AzureLanLog.i("MainActivity: on available subscription products query result complete")
             subProductsQueryResultsCode = resultCode
-            if (subscriptionPurchasesQueryResultCode != null
-                && inAppPurchaseQueryResultCode != null
-                && inAppProductsQueryResultCode != null) {
-                onInitializeQueryCompleteRunnable.onInitializeQueryComplete()
-            }
+            onInitializeQueryCompleteIfReady()
         }
     }
 
@@ -176,11 +168,7 @@ class BillingActionsHelper(private val activity: Activity) :
         Handler(Looper.getMainLooper()).post {
             inAppPurchaseQueryResultCode = resultCode
             AzureLanLog.i("MainActivity: on owned inapp purchases query result complete")
-            if (subscriptionPurchasesQueryResultCode != null
-                && subProductsQueryResultsCode != null
-                && inAppProductsQueryResultCode != null) {
-                onInitializeQueryCompleteRunnable.onInitializeQueryComplete()
-            }
+            onInitializeQueryCompleteIfReady()
         }
     }
 
@@ -188,11 +176,16 @@ class BillingActionsHelper(private val activity: Activity) :
         Handler(Looper.getMainLooper()).post {
             inAppProductsQueryResultCode = resultCode
             AzureLanLog.i("MainActivity: on available inapp products query result complete")
-            if (subscriptionPurchasesQueryResultCode != null
-                && subProductsQueryResultsCode != null
-                && inAppPurchaseQueryResultCode != null) {
-                onInitializeQueryCompleteRunnable.onInitializeQueryComplete()
-            }
+            onInitializeQueryCompleteIfReady()
+        }
+    }
+
+    private fun onInitializeQueryCompleteIfReady() {
+        if (subscriptionPurchasesQueryResultCode != null
+            && subProductsQueryResultsCode != null
+            && inAppPurchaseQueryResultCode != null
+            && inAppProductsQueryResultCode != null) {
+            onInitializeQueryCompleteRunnable.onInitializeQueryComplete()
         }
     }
 
