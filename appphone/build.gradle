@@ -77,4 +77,5 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-reactivestreams-ktx:$lifecycle_version"
     // optional - Test helpers for LiveData
     testImplementation "androidx.arch.core:core-testing:$arch_version"
+    androidTestImplementation "androidx.arch.core:core-testing:$arch_version"
 }

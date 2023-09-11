@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.wear.widget.BoxInsetLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/box_inset_layout_padding"
     android:background="@android:color/black"
     tools:context=".externalvisiblelog.ExternalVisibleLogActivity"
     tools:deviceIds="wear">
@@ -13,19 +12,21 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="@dimen/inner_frame_layout_padding"
         app:layout_boxedEdges="all">
 
-        <androidx.core.widget.NestedScrollView
+        <androidx.wear.widget.WearableRecyclerView
+            android:id="@+id/recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent"
+            android:scrollbars="vertical"
+            android:focusable="true"
+            android:focusableInTouchMode="true">
+        </androidx.wear.widget.WearableRecyclerView>
 
-            <TextView
-                android:id="@+id/log"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@android:color/white"/>
-        </androidx.core.widget.NestedScrollView>
-
+        <TextClock
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:textColor="@android:color/white"/>
     </FrameLayout>
-</androidx.wear.widget.BoxInsetLayout>
+</LinearLayout>

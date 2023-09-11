@@ -1,105 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.wear.widget.BoxInsetLayout
+<androidx.wear.widget.drawer.WearableDrawerLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/box_inset_layout_padding"
     android:background="@android:color/black"
     tools:context=".mainactivity.MainActivity"
     tools:deviceIds="wear">
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="@dimen/inner_frame_layout_padding"
-        app:layout_boxedEdges="all">
+        android:layout_height="match_parent">
 
-        <androidx.core.widget.NestedScrollView
+        <androidx.wear.widget.WearableRecyclerView
+            android:id="@+id/recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:textColor="@android:color/white"
-                    android:text="@string/one_time_purchase" />
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/gardener"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="3dp"
-                    android:background="@drawable/rounded_corner_bg"
-                    android:textColor="@android:color/white"
-                    android:text="@string/be_gardener" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@android:color/white"
-                    android:gravity="center"
-                    android:text="@string/consumable_purchase" />
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/rose"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="3dp"
-                    android:background="@drawable/rounded_corner_bg"
-                    android:textColor="@android:color/white"
-                    android:text="@string/buy_a_rose" />
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/tree"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="3dp"
-                    android:background="@drawable/rounded_corner_bg"
-                    android:textColor="@android:color/white"
-                    android:text="@string/buy_a_tree" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@android:color/white"
-                    android:gravity="center"
-                    android:text="@string/subscriptions" />
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/weekly"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="3dp"
-                    android:background="@drawable/rounded_corner_bg"
-                    android:textColor="@android:color/white"
-                    android:text="@string/weekly_sub" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@android:color/white"
-                    android:gravity="center"
-                    android:text="@string/logs" />
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/view_logs"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="3dp"
-                    android:background="@drawable/rounded_corner_bg"
-                    android:textColor="@android:color/white"
-                    android:text="@string/view" />
-
-            </LinearLayout>
-        </androidx.core.widget.NestedScrollView>
+            android:layout_height="match_parent"
+            android:scrollbars="vertical"
+            android:focusable="true"
+            android:focusableInTouchMode="true">
+        </androidx.wear.widget.WearableRecyclerView>
 
         <LinearLayout
             android:id="@+id/loading_indicator"
@@ -116,5 +37,11 @@
 
         </LinearLayout>
 
+        <TextClock
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:textColor="@android:color/white"/>
+
     </FrameLayout>
-</androidx.wear.widget.BoxInsetLayout>
+</androidx.wear.widget.drawer.WearableDrawerLayout>

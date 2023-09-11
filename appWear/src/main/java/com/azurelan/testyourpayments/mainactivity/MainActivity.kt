@@ -8,10 +8,14 @@ import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.RecyclerView
+import androidx.wear.widget.WearableLinearLayoutManager
+import androidx.wear.widget.WearableRecyclerView
 import com.azurelan.testyourpayments.R
 import com.azurelan.testyourpayments.shared.billing.BillingUtils
 import com.azurelan.testyourpayments.databinding.ActivityMainBinding
 import com.azurelan.testyourpayments.externalvisiblelog.ExternalVisibleLogActivity
+import com.azurelan.testyourpayments.scrollingutils.ScrollingLayoutCallback
 import com.azurelan.testyourpayments.shared.billing.BillingActionsHelper
 import com.azurelan.testyourpayments.shared.billing.BillingProduct
 import com.azurelan.testyourpayments.shared.utils.AzureLanLog
@@ -29,12 +33,8 @@ class MainActivity : AppCompatActivity(),
     private var isLoading = false
     private lateinit var viewModel: BillingViewModel
     private lateinit var billingActionsHelper: BillingActionsHelper
-
-    private var gardener: Button? = null
-    private var tree: Button? = null
-    private var rose: Button? = null
-    private var weekly: Button? = null
-    private var viewLogs: Button? = null
+    private lateinit var recyclerView: WearableRecyclerView
+    private val homeItemViewDataList = ArrayList<HomeItemViewData>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,11 +48,22 @@ class MainActivity : AppCompatActivity(),
         loadingIndicator = findViewById(R.id.loading_indicator)
         uiStartLoading()
 
-        gardener = findViewById(R.id.gardener)
-        tree = findViewById(R.id.tree)
-        rose = findViewById(R.id.rose)
-        weekly = findViewById(R.id.weekly)
-        viewLogs = findViewById(R.id.view_logs)
+        homeItemViewDataList.clear()
+        homeItemViewDataList.addAll(createViewDataList())
+        recyclerView = findViewById(R.id.recycler_view)
+        recyclerView.apply {
+            // To align the edge children (first and last) with the center of the screen.
+            isEdgeItemsCenteringEnabled = true
+            layoutManager = WearableLinearLayoutManager(
+                this@MainActivity, ScrollingLayoutCallback()
+            )
+            adapter = HomeItemViewAdapter(homeItemViewDataList) {
+                homeItemViewData -> onItemClick(homeItemViewData)
+            }
+            //isCircularScrollingGestureEnabled = true
+            adapter?.notifyDataSetChanged()
+        }
+
 
         billingActionsHelper.initialize()
         billingActionsHelper.registerOnPurchaseConsumedContinueRunnable(this)
@@ -60,27 +71,99 @@ class MainActivity : AppCompatActivity(),
         billingActionsHelper.registerOnInitializeQueryCompleteRunnable(this)
         billingActionsHelper.registerUiActions(this)
 
-        gardener?.setOnClickListener {
-            billingActionsHelper.handleGardenerClick()
-        }
-        tree?.setOnClickListener {
-            billingActionsHelper.launchPurchaseFlowFor(BillingProduct.TREE)
-        }
-        rose?.setOnClickListener {
-            billingActionsHelper.launchPurchaseFlowFor(BillingProduct.ROSE)
-        }
-        weekly?.setOnClickListener {
-            billingActionsHelper.launchPurchaseFlowFor(BillingProduct.WEEKLY_JOB)
-        }
-
-        viewLogs?.setOnClickListener {
-            startActivity(
-                Intent(this, ExternalVisibleLogActivity::class.java)
-            )
-        }
         updateButtonTexts()
+        recyclerView.requestFocus()
     }
 
+    private fun createViewDataList(): List<HomeItemViewData> {
+        val homeItemViewDataList = ArrayList<HomeItemViewData>()
+        // 0
+        homeItemViewDataList.add(
+            HomeItemViewData(
+                HomeItemViewAdapter.VIEW_TYPE_HOME_TITLE_ROW,
+                getString(R.string.one_time_purchase),
+            )
+        )
+        // 1
+        homeItemViewDataList.add(
+            HomeItemViewData(
+                HomeItemViewAdapter.VIEW_TYPE_HOME_GARDENER_ITEM_ROW,
+                getString(R.string.be_gardener),
+            )
+        )
+        // 2
+        homeItemViewDataList.add(
+            HomeItemViewData(
+                HomeItemViewAdapter.VIEW_TYPE_HOME_TITLE_ROW,
+                getString(R.string.consumable_purchase),
+            )
+        )
+        // 3
+        homeItemViewDataList.add(
+            HomeItemViewData(
+                HomeItemViewAdapter.VIEW_TYPE_HOME_ROSE_ITEM_ROW,
+                getString(R.string.buy_a_rose),
+            )
+        )
+        // 4
+        homeItemViewDataList.add(
+            HomeItemViewData(
+                HomeItemViewAdapter.VIEW_TYPE_HOME_TREE_ITEM_ROW,
+                getString(R.string.buy_a_tree),
+            )
+        )
+        // 5
+        homeItemViewDataList.add(
+            HomeItemViewData(
+                HomeItemViewAdapter.VIEW_TYPE_HOME_TITLE_ROW,
+                getString(R.string.subscriptions),
+            )
+        )
+        // 6
+        homeItemViewDataList.add(
+            HomeItemViewData(
+                HomeItemViewAdapter.VIEW_TYPE_HOME_SERVICE_ITEM_ROW,
+                getString(R.string.weekly_sub),
+            )
+        )
+        // 7
+        homeItemViewDataList.add(
+            HomeItemViewData(
+                HomeItemViewAdapter.VIEW_TYPE_HOME_TITLE_ROW,
+                getString(R.string.logs),
+            )
+        )
+        // 8
+        homeItemViewDataList.add(
+            HomeItemViewData(
+                HomeItemViewAdapter.VIEW_TYPE_HOME_LOG_PAGE_ROW,
+                getString(R.string.view),
+            )
+        )
+        return homeItemViewDataList
+    }
+
+    private fun onItemClick(homeItemViewData: HomeItemViewData) {
+        when(homeItemViewData.viewType) {
+            HomeItemViewAdapter.VIEW_TYPE_HOME_GARDENER_ITEM_ROW -> {
+                billingActionsHelper.handleGardenerClick()
+            }
+            HomeItemViewAdapter.VIEW_TYPE_HOME_ROSE_ITEM_ROW -> {
+                billingActionsHelper.launchPurchaseFlowFor(BillingProduct.ROSE)
+            }
+            HomeItemViewAdapter.VIEW_TYPE_HOME_TREE_ITEM_ROW -> {
+                billingActionsHelper.launchPurchaseFlowFor(BillingProduct.TREE)
+            }
+            HomeItemViewAdapter.VIEW_TYPE_HOME_SERVICE_ITEM_ROW -> {
+                billingActionsHelper.launchPurchaseFlowFor(BillingProduct.WEEKLY_JOB)
+            }
+            HomeItemViewAdapter.VIEW_TYPE_HOME_LOG_PAGE_ROW -> {
+                startActivity(
+                    Intent(this, ExternalVisibleLogActivity::class.java)
+                )
+            }
+        }
+    }
     override fun onStart() {
         super.onStart()
         AzureLanLog.d("MA: onStart. Self: %s", this)
@@ -152,29 +235,44 @@ class MainActivity : AppCompatActivity(),
 
     private fun updateButtonTexts() {
         if (BillingUtils.isGardenerActive()) {
-            gardener?.text = getString(R.string.reset_gardener)
-        } else {
-            gardener?.text = getString(R.string.be_gardener)
-        }
-        if (BillingUtils.isWeeklySubActive()) {
-            weekly?.text = getString(
-                R.string.format_with_state,
-                getString(R.string.weekly_sub),
-                getString(R.string.active),
+            homeItemViewDataList[1] = HomeItemViewData(
+                HomeItemViewAdapter.VIEW_TYPE_HOME_GARDENER_ITEM_ROW,
+                getString(R.string.reset_gardener),
             )
         } else {
-            weekly?.text = getString(R.string.weekly_sub)
+            homeItemViewDataList[1] = HomeItemViewData(
+                HomeItemViewAdapter.VIEW_TYPE_HOME_GARDENER_ITEM_ROW,
+                getString(R.string.be_gardener),
+            )
         }
-        tree?.text = getString(
-            R.string.format_with_state,
-            getString(R.string.buy_a_tree),
-            billingActionsHelper.getTreeCount().toString(),
-        )
-        rose?.text = getString(
-            R.string.format_with_state,
-            getString(R.string.buy_a_rose),
-            billingActionsHelper.getRoseCount().toString(),
-        )
+        if (BillingUtils.isWeeklySubActive()) {
+            homeItemViewDataList[6] = HomeItemViewData(
+                HomeItemViewAdapter.VIEW_TYPE_HOME_SERVICE_ITEM_ROW,
+                getString(
+                    R.string.format_with_state,
+                    getString(R.string.weekly_sub),
+                    getString(R.string.active),
+                ))
+        } else {
+            homeItemViewDataList[6] = HomeItemViewData(
+                HomeItemViewAdapter.VIEW_TYPE_HOME_SERVICE_ITEM_ROW,
+                getString(R.string.weekly_sub))
+        }
+        homeItemViewDataList[3] = HomeItemViewData(
+            HomeItemViewAdapter.VIEW_TYPE_HOME_ROSE_ITEM_ROW,
+            getString(
+                R.string.format_with_state,
+                getString(R.string.buy_a_rose),
+                billingActionsHelper.getRoseCount().toString(),
+            ))
+        homeItemViewDataList[4] = HomeItemViewData(
+            HomeItemViewAdapter.VIEW_TYPE_HOME_TREE_ITEM_ROW,
+            getString(
+                R.string.format_with_state,
+                getString(R.string.buy_a_tree),
+                billingActionsHelper.getTreeCount().toString(),
+            ))
+        recyclerView.adapter?.notifyItemRangeChanged(1, 6)
     }
 
     override fun onDestroy() {

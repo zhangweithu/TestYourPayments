@@ -10,8 +10,8 @@ android {
         applicationId "com.azurelan.testyourpayments"
         minSdk 28
         targetSdk 33
-        versionCode 2311
-        versionName "23.11"
+        versionCode 2331
+        versionName "23.31"
 
     }
 
@@ -81,4 +81,5 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-reactivestreams-ktx:$lifecycle_version"
     // optional - Test helpers for LiveData
     testImplementation "androidx.arch.core:core-testing:$arch_version"
+    androidTestImplementation "androidx.arch.core:core-testing:$arch_version"
 }
