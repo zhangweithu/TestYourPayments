@@ -7,6 +7,7 @@ import android.os.Looper
 import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import androidx.wear.widget.WearableLinearLayoutManager
@@ -39,6 +40,9 @@ class MainActivity : AppCompatActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AzureLanLog.d("MA: onCreate. Self: %s", this)
+
+        val splashScreen = installSplashScreen()
+
         billingActionsHelper = BillingActionsHelper(this)
 
         binding = ActivityMainBinding.inflate(layoutInflater)

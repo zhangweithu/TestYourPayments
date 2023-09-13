@@ -10,8 +10,8 @@ android {
         applicationId "com.azurelan.testyourpayments"
         minSdk 28
         targetSdk 33
-        versionCode 2331
-        versionName "23.31"
+        versionCode 2341
+        versionName "23.41"
 
     }
 
@@ -41,6 +41,8 @@ android {
 }
 
 dependencies {
+    implementation 'androidx.core:core-splashscreen:1.0.0-beta02'
+
     implementation 'com.google.android.material:material:1.9.0'
 
     implementation 'androidx.core:core-ktx:1.10.1'
