@@ -1,16 +1,4 @@
 <resources>
     <string name="app_name">Test Payment Flows</string>
 
-    <string name="one_time_purchase">One Time Purchase</string>
-    <string name="consumable_purchase">Consumable Purchase</string>
-    <string name="subscriptions">Subscriptions</string>
-    <string name="be_gardener">Be A Gardener</string>
-    <string name="reset_gardener">Is A Gardener - Reset</string>
-    <string name="buy_a_tree">Buy A Tree</string>
-    <string name="buy_a_rose">Buy A Rose</string>
-    <string name="weekly_sub">Weekly Service</string>
-    <string name="format_with_state">%1$s (%2$s)</string>
-    <string name="active">Active</string>
-    <string name="logs">Logs</string>
-    <string name="view">View</string>
 </resources>

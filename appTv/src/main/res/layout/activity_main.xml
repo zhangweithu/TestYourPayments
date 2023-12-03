@@ -41,7 +41,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:textColor="@android:color/white"
                     android:text="@string/one_time_purchase" />
 
                 <androidx.appcompat.widget.AppCompatButton
@@ -56,7 +55,6 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@android:color/white"
                     android:gravity="center"
                     android:text="@string/consumable_purchase" />
 
@@ -81,7 +79,6 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@android:color/white"
                     android:gravity="center"
                     android:text="@string/subscriptions" />
 
@@ -97,7 +94,6 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@android:color/white"
                     android:gravity="center"
                     android:text="@string/logs" />
 
@@ -109,6 +105,29 @@
                     android:background="@drawable/rounded_corner_bg"
                     android:textColor="@android:color/white"
                     android:text="@string/view" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/white"
+                    android:gravity="center"
+                    android:text="@string/contact" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/contact_us"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="3dp"
+                    android:background="@drawable/rounded_corner_bg"
+                    android:textColor="@android:color/white"
+                    android:text="@string/not_working" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/white"
+                    android:gravity="center"
+                    android:text="@string/github_link" />
 
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>

@@ -46,5 +46,6 @@ class HomeItemViewAdapter(
         const val VIEW_TYPE_HOME_ROSE_ITEM_ROW = 4
         const val VIEW_TYPE_HOME_SERVICE_ITEM_ROW = 5
         const val VIEW_TYPE_HOME_LOG_PAGE_ROW = 6
+        const val VIEW_TYPE_HOME_CONTACT_ROW = 7
     }
 }

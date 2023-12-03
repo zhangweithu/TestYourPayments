@@ -10,11 +10,13 @@ import android.widget.Button
 import androidx.lifecycle.ViewModelProvider
 import com.azurelan.testyourpayments.R
 import com.azurelan.testyourpayments.externalvisiblelog.ExternalVisibleLogActivity
+import com.azurelan.testyourpayments.shared.R as sharedR
 import com.azurelan.testyourpayments.shared.billing.BillingActionsHelper
 import com.azurelan.testyourpayments.shared.billing.BillingProduct
 import com.azurelan.testyourpayments.shared.billing.BillingUtils
 import com.azurelan.testyourpayments.shared.externalvisiblelog.ExternallyVisibleLog
 import com.azurelan.testyourpayments.shared.utils.AzureLanLog
+import com.azurelan.testyourpayments.shared.utils.ContactUtils
 import com.azurelan.testyourpayments.shared.viewmodels.BillingViewModel
 
 class MainActivity : AppCompatActivity(),
@@ -33,6 +35,7 @@ BillingUtils.UiActions {
     private var rose: Button? = null
     private var weekly: Button? = null
     private var viewLogs: Button? = null
+    private var contactButton: Button? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,6 +56,7 @@ BillingUtils.UiActions {
         rose = findViewById(R.id.rose)
         weekly = findViewById(R.id.weekly)
         viewLogs = findViewById(R.id.view_logs)
+        contactButton = findViewById(R.id.contact_us)
 
         billingActionsHelper.initialize()
         billingActionsHelper.registerOnPurchaseConsumedContinueRunnable(this)
@@ -77,6 +81,12 @@ BillingUtils.UiActions {
             startActivity(
                 Intent(this, ExternalVisibleLogActivity::class.java)
             )
+        }
+        contactButton?.setOnClickListener {
+            ContactUtils.contactByEmail(
+                this,
+                com.azurelan.testyourpayments.BuildConfig.VERSION_CODE,
+                ContactUtils.FormFactor.PHONE)
         }
         updateButtonTexts()
     }
@@ -154,27 +164,27 @@ BillingUtils.UiActions {
 
     private fun updateButtonTexts() {
         if (BillingUtils.isGardenerActive()) {
-            gardener?.text = getString(R.string.reset_gardener)
+            gardener?.text = getString(sharedR.string.reset_gardener)
         } else {
-            gardener?.text = getString(R.string.be_gardener)
+            gardener?.text = getString(sharedR.string.be_gardener)
         }
         if (BillingUtils.isWeeklySubActive()) {
             weekly?.text = getString(
-                R.string.format_with_state,
-                getString(R.string.weekly_sub),
-                getString(R.string.active),
+                sharedR.string.format_with_state,
+                getString(sharedR.string.weekly_sub),
+                getString(sharedR.string.active),
             )
         } else {
-            weekly?.text = getString(R.string.weekly_sub)
+            weekly?.text = getString(sharedR.string.weekly_sub)
         }
         tree?.text = getString(
-            R.string.format_with_state,
-            getString(R.string.buy_a_tree),
+            sharedR.string.format_with_state,
+            getString(sharedR.string.buy_a_tree),
             billingActionsHelper.getTreeCount().toString(),
         )
         rose?.text = getString(
-            R.string.format_with_state,
-            getString(R.string.buy_a_rose),
+            sharedR.string.format_with_state,
+            getString(sharedR.string.buy_a_rose),
             billingActionsHelper.getRoseCount().toString(),
         )
     }

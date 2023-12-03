@@ -5,14 +5,14 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
-import android.widget.Button
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.RecyclerView
 import androidx.wear.widget.WearableLinearLayoutManager
 import androidx.wear.widget.WearableRecyclerView
 import com.azurelan.testyourpayments.R
+import com.azurelan.testyourpayments.shared.R as sharedR
 import com.azurelan.testyourpayments.shared.billing.BillingUtils
 import com.azurelan.testyourpayments.databinding.ActivityMainBinding
 import com.azurelan.testyourpayments.externalvisiblelog.ExternalVisibleLogActivity
@@ -85,63 +85,84 @@ class MainActivity : AppCompatActivity(),
         homeItemViewDataList.add(
             HomeItemViewData(
                 HomeItemViewAdapter.VIEW_TYPE_HOME_TITLE_ROW,
-                getString(R.string.one_time_purchase),
+                getString(sharedR.string.one_time_purchase),
             )
         )
         // 1
         homeItemViewDataList.add(
             HomeItemViewData(
                 HomeItemViewAdapter.VIEW_TYPE_HOME_GARDENER_ITEM_ROW,
-                getString(R.string.be_gardener),
+                getString(sharedR.string.be_gardener),
             )
         )
         // 2
         homeItemViewDataList.add(
             HomeItemViewData(
                 HomeItemViewAdapter.VIEW_TYPE_HOME_TITLE_ROW,
-                getString(R.string.consumable_purchase),
+                getString(sharedR.string.consumable_purchase),
             )
         )
         // 3
         homeItemViewDataList.add(
             HomeItemViewData(
                 HomeItemViewAdapter.VIEW_TYPE_HOME_ROSE_ITEM_ROW,
-                getString(R.string.buy_a_rose),
+                getString(sharedR.string.buy_a_rose),
             )
         )
         // 4
         homeItemViewDataList.add(
             HomeItemViewData(
                 HomeItemViewAdapter.VIEW_TYPE_HOME_TREE_ITEM_ROW,
-                getString(R.string.buy_a_tree),
+                getString(sharedR.string.buy_a_tree),
             )
         )
         // 5
         homeItemViewDataList.add(
             HomeItemViewData(
                 HomeItemViewAdapter.VIEW_TYPE_HOME_TITLE_ROW,
-                getString(R.string.subscriptions),
+                getString(sharedR.string.subscriptions),
             )
         )
         // 6
         homeItemViewDataList.add(
             HomeItemViewData(
                 HomeItemViewAdapter.VIEW_TYPE_HOME_SERVICE_ITEM_ROW,
-                getString(R.string.weekly_sub),
+                getString(sharedR.string.weekly_sub),
             )
         )
         // 7
         homeItemViewDataList.add(
             HomeItemViewData(
                 HomeItemViewAdapter.VIEW_TYPE_HOME_TITLE_ROW,
-                getString(R.string.logs),
+                getString(sharedR.string.logs),
             )
         )
         // 8
         homeItemViewDataList.add(
             HomeItemViewData(
                 HomeItemViewAdapter.VIEW_TYPE_HOME_LOG_PAGE_ROW,
-                getString(R.string.view),
+                getString(sharedR.string.view),
+            )
+        )
+        // 9
+        homeItemViewDataList.add(
+            HomeItemViewData(
+                HomeItemViewAdapter.VIEW_TYPE_HOME_TITLE_ROW,
+                getString(sharedR.string.contact),
+            )
+        )
+        // 10
+        homeItemViewDataList.add(
+            HomeItemViewData(
+                HomeItemViewAdapter.VIEW_TYPE_HOME_CONTACT_ROW,
+                getString(sharedR.string.not_working),
+            )
+        )
+        // 11
+        homeItemViewDataList.add(
+            HomeItemViewData(
+                HomeItemViewAdapter.VIEW_TYPE_HOME_TITLE_ROW,
+                getString(sharedR.string.github_link),
             )
         )
         return homeItemViewDataList
@@ -165,6 +186,13 @@ class MainActivity : AppCompatActivity(),
                 startActivity(
                     Intent(this, ExternalVisibleLogActivity::class.java)
                 )
+            }
+            HomeItemViewAdapter.VIEW_TYPE_HOME_CONTACT_ROW -> {
+                Toast.makeText(
+                    this,
+                    getString(R.string.contact_toast),
+                    Toast.LENGTH_LONG,
+                    ).show()
             }
         }
     }
@@ -241,39 +269,39 @@ class MainActivity : AppCompatActivity(),
         if (BillingUtils.isGardenerActive()) {
             homeItemViewDataList[1] = HomeItemViewData(
                 HomeItemViewAdapter.VIEW_TYPE_HOME_GARDENER_ITEM_ROW,
-                getString(R.string.reset_gardener),
+                getString(sharedR.string.reset_gardener),
             )
         } else {
             homeItemViewDataList[1] = HomeItemViewData(
                 HomeItemViewAdapter.VIEW_TYPE_HOME_GARDENER_ITEM_ROW,
-                getString(R.string.be_gardener),
+                getString(sharedR.string.be_gardener),
             )
         }
         if (BillingUtils.isWeeklySubActive()) {
             homeItemViewDataList[6] = HomeItemViewData(
                 HomeItemViewAdapter.VIEW_TYPE_HOME_SERVICE_ITEM_ROW,
                 getString(
-                    R.string.format_with_state,
-                    getString(R.string.weekly_sub),
-                    getString(R.string.active),
+                    sharedR.string.format_with_state,
+                    getString(sharedR.string.weekly_sub),
+                    getString(sharedR.string.active),
                 ))
         } else {
             homeItemViewDataList[6] = HomeItemViewData(
                 HomeItemViewAdapter.VIEW_TYPE_HOME_SERVICE_ITEM_ROW,
-                getString(R.string.weekly_sub))
+                getString(sharedR.string.weekly_sub))
         }
         homeItemViewDataList[3] = HomeItemViewData(
             HomeItemViewAdapter.VIEW_TYPE_HOME_ROSE_ITEM_ROW,
             getString(
-                R.string.format_with_state,
-                getString(R.string.buy_a_rose),
+                sharedR.string.format_with_state,
+                getString(sharedR.string.buy_a_rose),
                 billingActionsHelper.getRoseCount().toString(),
             ))
         homeItemViewDataList[4] = HomeItemViewData(
             HomeItemViewAdapter.VIEW_TYPE_HOME_TREE_ITEM_ROW,
             getString(
-                R.string.format_with_state,
-                getString(R.string.buy_a_tree),
+                sharedR.string.format_with_state,
+                getString(sharedR.string.buy_a_tree),
                 billingActionsHelper.getTreeCount().toString(),
             ))
         recyclerView.adapter?.notifyItemRangeChanged(1, 6)
