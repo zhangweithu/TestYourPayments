@@ -78,9 +78,9 @@ BillingUtils.UiActions {
         }
 
         viewLogs?.setOnClickListener {
-            startActivity(
-                Intent(this, ExternalVisibleLogActivity::class.java)
-            )
+            val intent = Intent(this, ExternalVisibleLogActivity::class.java)
+            intent.setPackage(packageName)
+            startActivity(intent)
         }
         contactButton?.setOnClickListener {
             ContactUtils.contactByEmail(

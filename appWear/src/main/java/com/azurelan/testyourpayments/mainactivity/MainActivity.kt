@@ -183,9 +183,9 @@ class MainActivity : AppCompatActivity(),
                 billingActionsHelper.launchPurchaseFlowFor(BillingProduct.WEEKLY_JOB)
             }
             HomeItemViewAdapter.VIEW_TYPE_HOME_LOG_PAGE_ROW -> {
-                startActivity(
-                    Intent(this, ExternalVisibleLogActivity::class.java)
-                )
+                val intent = Intent(this, ExternalVisibleLogActivity::class.java)
+                intent.setPackage(packageName)
+                startActivity(intent)
             }
             HomeItemViewAdapter.VIEW_TYPE_HOME_CONTACT_ROW -> {
                 Toast.makeText(

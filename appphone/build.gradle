@@ -4,14 +4,14 @@ plugins {
 }
 
 android {
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.azurelan.testyourpayments"
         minSdk 24
-        targetSdk 33
-        versionCode 2330
-        versionName "23.30"
+        targetSdk 34
+        versionCode 2340
+        versionName "23.40"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
