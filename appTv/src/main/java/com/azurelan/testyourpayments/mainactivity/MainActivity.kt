@@ -149,14 +149,19 @@ BillingUtils.UiActions {
     }
 
     override fun uiStartLoading() {
+        logEvent("MA: starting loading")
         isLoading = true
-        loadingIndicator?.visibility = View.VISIBLE
+        Handler(Looper.getMainLooper()).post {
+            loadingIndicator?.visibility = View.VISIBLE
+        }
     }
 
     override fun uiEndLoading() {
         logEvent("MA: ending loading")
         isLoading = false
-        loadingIndicator?.visibility = View.GONE
+        Handler(Looper.getMainLooper()).post {
+            loadingIndicator?.visibility = View.GONE
+        }
     }
 
     private fun updateBehavior() {

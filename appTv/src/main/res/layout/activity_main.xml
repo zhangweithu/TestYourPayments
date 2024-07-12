@@ -48,7 +48,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="3dp"
-                    android:background="@drawable/rounded_corner_bg"
+                    android:background="@drawable/item_bg"
                     android:textColor="@android:color/white"
                     android:text="@string/be_gardener" />
 
@@ -63,7 +63,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="3dp"
-                    android:background="@drawable/rounded_corner_bg"
+                    android:background="@drawable/item_bg"
                     android:textColor="@android:color/white"
                     android:text="@string/buy_a_rose" />
 
@@ -72,7 +72,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="3dp"
-                    android:background="@drawable/rounded_corner_bg"
+                    android:background="@drawable/item_bg"
                     android:textColor="@android:color/white"
                     android:text="@string/buy_a_tree" />
 
@@ -87,7 +87,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="3dp"
-                    android:background="@drawable/rounded_corner_bg"
+                    android:background="@drawable/item_bg"
                     android:textColor="@android:color/white"
                     android:text="@string/weekly_sub" />
 
@@ -102,7 +102,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="3dp"
-                    android:background="@drawable/rounded_corner_bg"
+                    android:background="@drawable/item_bg"
                     android:textColor="@android:color/white"
                     android:text="@string/view" />
 
@@ -118,7 +118,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="3dp"
-                    android:background="@drawable/rounded_corner_bg"
+                    android:background="@drawable/item_bg"
                     android:textColor="@android:color/white"
                     android:text="@string/not_working" />
 

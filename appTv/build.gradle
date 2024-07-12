@@ -10,8 +10,8 @@ android {
         applicationId "com.azurelan.testyourpayments"
         minSdk 24
         targetSdk 34
-        versionCode 2352
-        versionName "23.52"
+        versionCode 2362
+        versionName "23.62"
     }
 
     buildTypes {

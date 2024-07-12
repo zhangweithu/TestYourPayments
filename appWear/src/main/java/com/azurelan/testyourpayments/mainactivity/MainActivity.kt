@@ -250,12 +250,16 @@ class MainActivity : AppCompatActivity(),
 
     override fun uiStartLoading() {
         isLoading = true
-        loadingIndicator?.visibility = View.VISIBLE
+        Handler(Looper.getMainLooper()).post {
+            loadingIndicator?.visibility = View.VISIBLE
+        }
     }
 
     override fun uiEndLoading() {
         isLoading = false
-        loadingIndicator?.visibility = View.GONE
+        Handler(Looper.getMainLooper()).post {
+            loadingIndicator?.visibility = View.GONE
+        }
     }
 
     private fun updateBehavior() {
