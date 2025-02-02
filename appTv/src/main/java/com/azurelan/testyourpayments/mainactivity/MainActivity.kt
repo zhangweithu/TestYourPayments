@@ -6,7 +6,10 @@ import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.widget.Button
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import com.azurelan.testyourpayments.R
 import com.azurelan.testyourpayments.externalvisiblelog.ExternalVisibleLogActivity
@@ -41,11 +44,29 @@ BillingUtils.UiActions {
     private var contactButton: Button? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         setSupportActionBar(findViewById(R.id.toolbar))
         supportActionBar?.setDisplayHomeAsUpEnabled(false)
+
+        ViewCompat.setOnApplyWindowInsetsListener(window.decorView.rootView) { v, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            // Apply the insets as a margin to the view. This solution sets
+            // only the bottom, left, and right dimensions, but you can apply whichever
+            // insets are appropriate to your layout. You can also update the view padding
+            // if that's more appropriate.
+            v.setPadding(
+                insets.left,
+                insets.top,
+                insets.right,
+                insets.bottom,
+            )
+            // Return CONSUMED if you don't want want the window insets to keep passing
+            // down to descendant views.
+            WindowInsetsCompat.CONSUMED
+        }
 
         AzureLanLog.d("MA: onCreate. Self: %s", this)
         billingActionsHelper = BillingActionsHelper(this)

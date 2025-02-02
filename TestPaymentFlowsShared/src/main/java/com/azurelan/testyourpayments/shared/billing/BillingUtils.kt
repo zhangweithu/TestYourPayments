@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.billingclient.api.*
 import com.android.billingclient.api.BillingClientStateListener
+import com.android.billingclient.api.BillingFlowParams.SubscriptionUpdateParams
 import com.android.billingclient.api.PurchasesUpdatedListener
 import com.azurelan.testyourpayments.shared.R
 import com.azurelan.testyourpayments.shared.utils.AzureLanLog
@@ -229,8 +230,7 @@ class BillingUtils(
                 .setSubscriptionUpdateParams(
                     BillingFlowParams.SubscriptionUpdateParams.newBuilder()
                         .setOldPurchaseToken(oldPurchaseToken)
-                        .setReplaceProrationMode(
-                            BillingFlowParams.ProrationMode.DEFERRED)
+                        .setSubscriptionReplacementMode(SubscriptionUpdateParams.ReplacementMode.DEFERRED)
                         .build())
                 .build()
 
