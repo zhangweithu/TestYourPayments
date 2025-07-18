@@ -410,7 +410,9 @@ class BillingUtils(
             // Use application context for singleton
             billingClient = BillingClient.newBuilder(context.applicationContext)
                 .setListener(this)
-                .enablePendingPurchases()
+                .enablePendingPurchases(
+                    PendingPurchasesParams.newBuilder().enableOneTimeProducts().build()
+                )
                 .build()
         }
     }
@@ -466,11 +468,11 @@ class BillingUtils(
                 )
                 .build()
         billingClient?.queryProductDetailsAsync(queryProductDetailsParams) { queryBillingResult,
-                                                                             productDetailsList ->
+                                                                             productDetailsResult ->
             // check billingResult
             // process returned productDetailsList
             if (queryBillingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                availableInAppProductDetailsList = productDetailsList
+                availableInAppProductDetailsList = productDetailsResult.productDetailsList
             } else {
                 logEvent(
                     String.format(
@@ -497,10 +499,10 @@ class BillingUtils(
                     .onInAppProductsQueryResultComplete(queryBillingResult.responseCode)
             }
             AzureLanLog.d(
-                "BU: in app products result list %s", productDetailsList)
+                "BU: in app products result list %s", productDetailsResult.productDetailsList)
             logEvent(
                 String.format(
-                    "BU: in app products result list size is %d", productDetailsList.size))
+                    "BU: in app products result list size is %d", productDetailsResult.productDetailsList.size))
         }
     }
 
@@ -523,11 +525,11 @@ class BillingUtils(
                 )
                 .build()
         billingClient?.queryProductDetailsAsync(queryProductDetailsParams) { queryBillingResult,
-                                                                             productDetailsList ->
+                                                                             productDetailsResult ->
             // check billingResult
             // process returned productDetailsList
             if (queryBillingResult.responseCode == BillingClient.BillingResponseCode.OK) {
-                availableSubscriptionDetailsList = productDetailsList
+                availableSubscriptionDetailsList = productDetailsResult.productDetailsList
             } else {
                 logEvent(
                     String.format(
@@ -555,11 +557,11 @@ class BillingUtils(
                     .onSubscriptionProductsQueryResultComplete(queryBillingResult.responseCode)
             }
             AzureLanLog.d(
-                "BU: subscription products result list %s", productDetailsList)
+                "BU: subscription products result list %s", productDetailsResult.productDetailsList)
             logEvent(
                 String.format(
                     "BU: subscription products result list size is %d",
-                    productDetailsList.size))
+                    productDetailsResult.productDetailsList.size))
         }
     }
 

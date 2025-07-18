@@ -10,8 +10,8 @@ android {
         applicationId "com.azurelan.testyourpayments"
         minSdk 24
         targetSdk 35
-        versionCode 2372  // Must be rolled out together with Phone bundle
-        versionName "23.72"
+        versionCode 2382  // Must be rolled out together with Phone bundle
+        versionName "23.82"
     }
 
     buildTypes {
@@ -41,23 +41,23 @@ dependencies {
 
     implementation project(path: ':TestPaymentFlowsShared')
 
-    implementation 'androidx.leanback:leanback:1.0.0'
+    implementation 'androidx.leanback:leanback:1.2.0'
     implementation 'com.github.bumptech.glide:glide:4.11.0'
 
     implementation 'com.google.android.material:material:1.12.0'
 
-    implementation 'androidx.core:core-ktx:1.15.0'
+    implementation 'androidx.core:core-ktx:1.16.0'
     implementation 'androidx.percentlayout:percentlayout:1.0.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.4.0'
-    implementation 'com.android.billingclient:billing-ktx:7.1.1'
+    implementation 'com.android.billingclient:billing-ktx:8.0.0'
 
     // Coroutine
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
-    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1'
+    implementation 'androidx.appcompat:appcompat:1.7.1'
     implementation project(path: ':TestPaymentFlowsShared')
 
-    def lifecycle_version = "2.7.0"
+    def lifecycle_version = "2.9.2"
     def arch_version = "2.2.0"
 
     // ViewModel
@@ -85,5 +85,5 @@ dependencies {
     androidTestImplementation "androidx.arch.core:core-testing:$arch_version"
 
     // For edge to edge
-    implementation 'androidx.activity:activity-ktx:1.10.0'
+    implementation 'androidx.activity:activity-ktx:1.10.1'
 }
