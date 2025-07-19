@@ -10,8 +10,8 @@ android {
         applicationId "com.azurelan.testyourpayments"
         minSdk 24
         targetSdk 35
-        versionCode 2380  // Must be rolled out together with TV bundle
-        versionName "23.80"
+        versionCode 2390  // Must be rolled out together with TV bundle
+        versionName "23.90"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
